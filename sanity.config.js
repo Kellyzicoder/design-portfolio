@@ -4,6 +4,8 @@ import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import poster from './sanity/schemas/poster';
 import siteSettings from './sanity/schemas/siteSettings';
+import BulkUpload from './sanity/tools/BulkUpload';
+import { UploadIcon } from '@sanity/icons';
 import { SECTION_OPTIONS } from './lib/sections';
 import { projectId, dataset } from './lib/sanity';
 
@@ -24,6 +26,8 @@ export default defineConfig({
         ? prev.filter((a) => !['duplicate', 'delete', 'unpublish'].includes(a.action))
         : prev,
   },
+  // extra page in the top bar of /studio
+  tools: (prev) => [...prev, { name: 'bulk-upload', title: 'Bulk upload', icon: UploadIcon, component: BulkUpload }],
   plugins: [
     structureTool({
       structure: (S) =>
