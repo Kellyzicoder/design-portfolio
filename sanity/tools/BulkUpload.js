@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from 'react';
 import { useClient } from 'sanity';
 import { Box, Button, Card, Flex, Grid, Heading, Select, Stack, Text } from '@sanity/ui';
 import { SECTION_OPTIONS } from '../../lib/sections';
+import { nameFromFile } from '../../lib/fileName';
 
 const MAX_MB = 20;
 const AT_ONCE = 3; // how many uploads run at the same time
@@ -43,6 +44,7 @@ export default function BulkUpload() {
       const asset = await client.assets.upload('image', it.file, { filename: it.file.name });
       await client.create({
         _type: 'poster',
+        title: nameFromFile(it.file.name),
         section,
         image: { _type: 'image', asset: { _type: 'reference', _ref: asset._id } },
       });

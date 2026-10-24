@@ -1,4 +1,5 @@
 import { SECTION_OPTIONS } from '../../lib/sections';
+import { nameFromFile } from '../../lib/fileName';
 
 export default {
   name: 'poster',
@@ -23,7 +24,7 @@ export default {
       name: 'title',
       title: 'Title (optional)',
       type: 'string',
-      description: 'Shown when someone opens the poster.',
+      description: 'Shown when someone opens the poster. Leave empty to use the file name.',
     },
     {
       name: 'order',
@@ -33,10 +34,10 @@ export default {
     },
   ],
   preview: {
-    select: { title: 'title', section: 'section', media: 'image' },
-    prepare({ title, section, media }) {
+    select: { title: 'title', file: 'image.asset.originalFilename', section: 'section', media: 'image' },
+    prepare({ title, file, section, media }) {
       const s = SECTION_OPTIONS.find((o) => o.value === section);
-      return { title: title || 'Untitled poster', subtitle: s ? s.title : 'No section', media };
+      return { title: title || nameFromFile(file) || 'Untitled poster', subtitle: s ? s.title : 'No section', media };
     },
   },
 };
