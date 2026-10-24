@@ -25,6 +25,8 @@ export default defineConfig({
         ? prev.filter((a) => !['duplicate', 'delete', 'unpublish'].includes(a.action))
         : prev,
   },
+  // extra page in the top bar of /studio
+  tools: (prev) => [...prev, { name: 'bulk-upload', title: 'Bulk upload', icon: UploadIcon, component: BulkUpload }],
   plugins: [
     structureTool({
       structure: (S) =>
