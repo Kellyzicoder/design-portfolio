@@ -5,6 +5,8 @@ import { structureTool } from 'sanity/structure';
 import poster from './sanity/schemas/poster';
 import siteSettings from './sanity/schemas/siteSettings';
 import testimonial from './sanity/schemas/testimonial';
+import BulkUpload from './sanity/tools/BulkUpload';
+import { UploadIcon } from '@sanity/icons';
 import { SECTION_OPTIONS } from './lib/sections';
 import { projectId, dataset } from './lib/sanity';
 
