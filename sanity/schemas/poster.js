@@ -1,4 +1,5 @@
 import { SECTION_OPTIONS } from '../../lib/sections';
+import SectionInput from '../components/SectionInput';
 import { nameFromFile } from '../../lib/fileName';
 
 export default {
@@ -17,7 +18,8 @@ export default {
       name: 'section',
       title: 'Section',
       type: 'string',
-      options: { list: SECTION_OPTIONS, layout: 'radio' },
+      description: 'Add new sections under "Sections" in the left menu.',
+      components: { input: SectionInput },
       validation: (R) => R.required(),
     },
     {
@@ -36,8 +38,10 @@ export default {
   preview: {
     select: { title: 'title', file: 'image.asset.originalFilename', section: 'section', media: 'image' },
     prepare({ title, file, section, media }) {
+      // custom sections show their short ID, e.g. "weddings" -> "Weddings"
       const s = SECTION_OPTIONS.find((o) => o.value === section);
-      return { title: title || nameFromFile(file) || 'Untitled poster', subtitle: s ? s.title : 'No section', media };
+      const label = s ? s.title : section ? section.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase()) : 'No section';
+      return { title: title || nameFromFile(file) || 'Untitled poster', subtitle: label, media };
     },
   },
 };

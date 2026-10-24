@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { SECTIONS } from '@/lib/sections';
+import { SECTIONS as DEFAULT_SECTIONS } from '@/lib/sections';
 import { startWall } from './wall';
 
 // Sanity images can be resized on the fly; local files are used as they are
@@ -31,7 +31,8 @@ function LinkOrText({ href, children }) {
   return href ? <a href={href} target="_blank" rel="noopener noreferrer">{children}</a> : <>{children}</>;
 }
 
-export default function Portfolio({ settings: s, posters, start, testimonials = [] }) {
+export default function Portfolio({ settings: s, posters, start, testimonials = [], sections }) {
+  const SECTIONS = sections && sections.length ? sections : DEFAULT_SECTIONS;
   /* ---------- Work section ---------- */
   const bySection = useMemo(() => {
     const m = {};

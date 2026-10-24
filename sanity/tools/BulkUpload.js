@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { useClient } from 'sanity';
 import { Box, Button, Card, Flex, Grid, Heading, Select, Stack, Text } from '@sanity/ui';
-import { SECTION_OPTIONS } from '../../lib/sections';
+import { useSectionOptions } from '../components/SectionInput';
 import { nameFromFile } from '../../lib/fileName';
 
 const MAX_MB = 20;
@@ -21,6 +21,7 @@ export default function BulkUpload() {
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef(null);
+  const SECTION_OPTIONS = useSectionOptions() || [];
 
   const addFiles = useCallback((fileList) => {
     const next = Array.from(fileList)

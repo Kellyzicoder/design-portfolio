@@ -5,9 +5,10 @@ import { structureTool } from 'sanity/structure';
 import poster from './sanity/schemas/poster';
 import siteSettings from './sanity/schemas/siteSettings';
 import testimonial from './sanity/schemas/testimonial';
+import section from './sanity/schemas/section';
+import { SECTIONS_QUERY, buildTree, pickable, seedSectionsIfEmpty } from './lib/sectionTree';
 import BulkUpload from './sanity/tools/BulkUpload';
 import { UploadIcon } from '@sanity/icons';
-import { SECTION_OPTIONS } from './lib/sections';
 import { projectId, dataset } from './lib/sanity';
 
 export default defineConfig({
@@ -17,7 +18,7 @@ export default defineConfig({
   projectId,
   dataset,
   schema: {
-    types: [poster, siteSettings, testimonial],
+    types: [poster, siteSettings, testimonial, section],
     // there is only one "Site text & links" document
     templates: (prev) => prev.filter((t) => t.schemaType !== 'siteSettings'),
   },
@@ -31,7 +32,7 @@ export default defineConfig({
   tools: (prev) => [...prev, { name: 'bulk-upload', title: 'Bulk upload', icon: UploadIcon, component: BulkUpload }],
   plugins: [
     structureTool({
-      structure: (S) =>
+      structure: (S, context) =>
         S.list()
           .title('Content')
           .items([
@@ -43,11 +44,15 @@ export default defineConfig({
             S.documentTypeListItem('poster').title('All posters'),
             S.listItem()
               .title('Posters by section')
-              .child(
-                S.list()
-                  .title('Sections')
+              .id('posters-by-section')
+              .child(async () => {
+                const client = context.getClient({ apiVersion: '2024-10-01' });
+                await seedSectionsIfEmpty(client).catch(() => {});
+                const options = pickable(buildTree(await client.fetch(SECTIONS_QUERY)));
+                return S.list()
+                  .title('Posters by section')
                   .items(
-                    SECTION_OPTIONS.map((o) =>
+                    options.map((o) =>
                       S.listItem()
                         .id(o.value)
                         .title(o.title)
@@ -60,8 +65,9 @@ export default defineConfig({
                             .initialValueTemplates([])
                         )
                     )
-                  )
-              ),
+                  );
+              }),
+            S.documentTypeListItem('section').title('Sections'),
             S.divider(),
             S.documentTypeListItem('testimonial').title('Testimonials'),
           ]),

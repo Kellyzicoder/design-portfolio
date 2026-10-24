@@ -2,6 +2,7 @@ import Portfolio from '@/components/Portfolio';
 import { client, SETTINGS_QUERY, POSTERS_QUERY, TESTIMONIALS_QUERY } from '@/lib/sanity';
 import { DEFAULT_SETTINGS, LOCAL_POSTERS, LOCAL_START } from '@/lib/defaults';
 import { nameFromFile } from '@/lib/fileName';
+import { SECTIONS_QUERY, buildTree } from '@/lib/sectionTree';
 
 // re-check the CMS for changes at most once a minute
 export const revalidate = 60;
@@ -10,12 +11,14 @@ export default async function Home() {
   let cms = null;
   let cmsPosters = [];
   let testimonials = [];
+  let sectionList = [];
   if (client) {
     try {
-      [cms, cmsPosters, testimonials] = await Promise.all([
+      [cms, cmsPosters, testimonials, sectionList] = await Promise.all([
         client.fetch(SETTINGS_QUERY),
         client.fetch(POSTERS_QUERY),
         client.fetch(TESTIMONIALS_QUERY),
+        client.fetch(SECTIONS_QUERY),
       ]);
     } catch (e) {
       console.error('Could not load from Sanity', e);
@@ -33,5 +36,5 @@ export default async function Home() {
     (cms && cms.start && cms.start.url && cms.start) ||
     (cmsPosters && cmsPosters.length ? cmsPosters.find((p) => p.aspect > 1.2) || cmsPosters[0] : LOCAL_START);
 
-  return <Portfolio settings={settings} posters={posters} start={start} testimonials={testimonials || []} />;
+  return <Portfolio settings={settings} posters={posters} start={start} testimonials={testimonials || []} sections={buildTree(sectionList)} />;
 }
