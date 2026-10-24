@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { SECTIONS as DEFAULT_SECTIONS } from '@/lib/sections';
 import { startWall } from './wall';
+import Viewer from './Viewer';
 
 // Sanity images can be resized on the fly; local files are used as they are
 export const sized = (url, w) => (url && url.includes('cdn.sanity.io') ? `${url}?w=${w}&fm=webp&q=80` : url);
@@ -49,18 +50,10 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
 
   /* ---------- poster viewer ---------- */
   const [vi, setVi] = useState(-1);
-  const open = vi >= 0 && list.length > 0;
-  const go = (d) => setVi((i) => (i + d + list.length) % list.length);
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => {
-      if (e.key === 'Escape') setVi(-1);
-      if (e.key === 'ArrowRight') go(1);
-      if (e.key === 'ArrowLeft') go(-1);
-    };
-    addEventListener('keydown', onKey);
-    return () => removeEventListener('keydown', onKey);
-  });
+  const open = vi >= 0 && vi < list.length;
+  const LIMIT = 8; // posters shown per tab before "Show all"
+  const shownList = list.slice(0, LIMIT);
+  useEffect(() => setVi(-1), [cat, sub]);
 
   /* ---------- 3D wall ---------- */
   const heroRef = useRef(null), canvasRef = useRef(null), openerRef = useRef(null);
@@ -137,12 +130,17 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
             )}
             <div className="grid">
               {list.length === 0 && <div className="empty">No {active.title} flyers added yet</div>}
-              {list.map((p, i) => (
+              {shownList.map((p, i) => (
                 <button key={p.id} className={p.aspect > 1.2 ? 'wide' : undefined} onClick={() => setVi(i)} style={blur(p)}>
                   <img src={sized(p.url, 800)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" decoding="async" onLoad={onImgLoad} ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }} />
                 </button>
               ))}
             </div>
+            {list.length > LIMIT && (
+              <div className="show-more">
+                <a href={`/work/${active.id}`}>Show all {list.length} {active.title} <span aria-hidden="true">→</span></a>
+              </div>
+            )}
           </div>
         </section>
 
@@ -246,21 +244,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
         <span>{s.youtubeUrl ? <a href={s.youtubeUrl} target="_blank" rel="noopener noreferrer">YouTube</a> : 'Graphic design portfolio'}</span>
       </footer>
 
-      {open && (
-        <div id="viewer" role="dialog" aria-label="Poster" onClick={(e) => e.target === e.currentTarget && setVi(-1)}>
-          <button className="x" aria-label="Close" onClick={() => setVi(-1)}>✕</button>
-          <div className="box">
-            <img src={sized(list[vi].url, 1800)} alt={list[vi].title || `Design ${vi + 1}`} style={blur(list[vi])} />
-            {/* load the next and previous posters in the background so arrows feel instant */}
-            {[1, -1].map((d) => <link key={d} rel="prefetch" as="image" href={sized(list[(vi + d + list.length) % list.length].url, 1800)} />)}
-            <div className="meta">
-              <button aria-label="Previous" onClick={() => go(-1)}>◀</button>
-              <span>{list[vi].title || active.title} · {vi + 1} / {list.length}</span>
-              <button aria-label="Next" onClick={() => go(1)}>▶</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {open && <Viewer list={list} index={vi} label={active.title} onClose={() => setVi(-1)} onIndex={setVi} />}
     </>
   );
 }

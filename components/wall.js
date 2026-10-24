@@ -18,13 +18,8 @@ export function startWall({ canvas, hero, opener, posters, start }) {
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -10, 10); // works in screen pixels
 
-  /* textures */
-  const CELL_ASPECT = 1 / 1.3; // every wall tile is the same size (width ÷ height)
-    const maxAniso = renderer.capabilities.getMaxAnisotropy();
-  const cover = (t, imgAspect, boxAspect) => { // crop to fill the tile, like object-fit: cover
-    if (imgAspect > boxAspect) { t.repeat.set(boxAspect / imgAspect, 1); t.offset.set((1 - t.repeat.x) / 2, 0); }
-    else { t.repeat.set(1, imgAspect / boxAspect); t.offset.set(0, (1 - t.repeat.y) / 2); }
-  };
+  /* textures: every poster keeps its real shape, nothing is cropped */
+  const maxAniso = renderer.capabilities.getMaxAnisotropy();
   const textures = [];
   const imgLoader = new THREE.ImageLoader(); imgLoader.setCrossOrigin('anonymous');
   // show the tiny blurred preview straight away, then swap in the real image when it arrives
@@ -35,7 +30,7 @@ export function startWall({ canvas, hero, opener, posters, start }) {
     imgLoader.load(p.url, (img) => { t.userData.full = true; set(img); });
     return t;
   };
-  const pool = (posters.length ? posters : [start]).map((p) => { const t = load(p); cover(t, p.aspect, CELL_ASPECT); return t; });
+  const pool = (posters.length ? posters : [start]).map((p) => ({ tex: load(p), aspect: p.aspect || 0.75 }));
   const startTex = load(start);
 
   const geo = new THREE.PlaneGeometry(1, 1);
@@ -46,7 +41,7 @@ export function startWall({ canvas, hero, opener, posters, start }) {
   })();
 
   /* build the wall */
-  let W = 1, H = 1, cw = 1, ch = 1, gap = 1, rows = [];
+  let W = 1, H = 1, ch = 1, gap = 1, rows = [];
   const wall = new THREE.Group(); scene.add(wall);
   const materials = [];
   const mat = (opts) => { const m = new THREE.MeshBasicMaterial(opts); materials.push(m); return m; };
@@ -59,29 +54,40 @@ export function startWall({ canvas, hero, opener, posters, start }) {
     camera.left = -W / 2; camera.right = W / 2; camera.top = H / 2; camera.bottom = -H / 2; camera.updateProjectionMatrix();
     renderer.setSize(W, H, false);
 
-    const cols = W < 640 ? 2.4 : W < 1100 ? 4.2 : 5.2; // tiles across the screen
+    // every tile is the same height; width follows the poster's own shape
     gap = Math.max(10, Math.round(W * 0.012));
-    cw = (W - gap * (cols + 1)) / cols; ch = cw / CELL_ASPECT;
+    ch = Math.round(Math.min(H * 0.36, W < 640 ? W * 0.62 : 440));
     let nRows = Math.ceil(H / (ch + gap)) + 2; if (nRows % 2 === 0) nRows++;
-    let N = Math.ceil(W / (cw + gap)) + 4; if (N % 2 === 0) N++;
-    const mid = (nRows - 1) / 2, centre = (N - 1) / 2;
+    const mid = (nRows - 1) / 2;
+    const minLen = W * 1.6 + ch * 4; // long enough that the wrap-around is never seen
 
     for (let r = 0; r < nRows; r++) {
       const g = new THREE.Group(); g.position.y = (mid - r) * (ch + gap); wall.add(g);
-      const tiles = [];
-      for (let i = 0; i < N; i++) {
-        const isStart = r === mid && i === centre;
+      const items = [];
+      if (r === mid) items.push({ tex: startTex, aspect: start.aspect || 1.6, isStart: true });
+      for (let k = 0, len = 0; len < minLen || k < 3; k++) {
+        const it = pool[(k + r * 3) % pool.length];
+        items.push(it); len += ch * it.aspect + gap;
+      }
+      // lay the row out left to right, then centre it (the start design sits at x = 0)
+      let x = 0;
+      const tiles = items.map((it) => {
+        const w = ch * it.aspect;
         const holder = new THREE.Group();
         const sh = new THREE.Mesh(geo, mat({ map: shadowTex, transparent: true, depthWrite: false }));
         sh.position.z = -1;
-        const m = new THREE.Mesh(geo, mat({ map: isStart ? startTex : pool[(i + r * 3) % pool.length], transparent: true, toneMapped: false }));
-        if (isStart) { m.renderOrder = 3; sh.renderOrder = 2; }
-        if (isStart) { m.material.opacity = 0; sh.material.opacity = 0; }
+        const m = new THREE.Mesh(geo, mat({ map: it.tex, transparent: true, toneMapped: false }));
+        if (it.isStart) { m.renderOrder = 3; sh.renderOrder = 2; m.material.opacity = 0; sh.material.opacity = 0; }
         holder.add(sh, m); g.add(holder);
-        const t = { holder, m, sh, x0: (i - centre) * (cw + gap), isStart };
-        tiles.push(t); sizeTile(t, cw, ch);
-      }
-      rows.push({ tiles, len: N * (cw + gap), dir: r % 2 ? 1 : -1, speed: 10 + (r % 3) * 6, drift: 0, y: g.position.y });
+        const t = { holder, m, sh, w, x0: x + w / 2, isStart: !!it.isStart };
+        sizeTile(t, w, ch);
+        x += w + gap;
+        return t;
+      });
+      const len = x;
+      const shift = r === mid ? -tiles[0].x0 : -len / 2 + ((r * 97) % 200);
+      tiles.forEach((t) => { t.x0 += shift; });
+      rows.push({ tiles, len, dir: r % 2 ? 1 : -1, speed: 10 + (r % 3) * 6, drift: 0, y: g.position.y });
     }
   }
   build();
@@ -110,15 +116,17 @@ export function startWall({ canvas, hero, opener, posters, start }) {
     }
 
     const textBottom = opener ? opener.offsetTop + opener.offsetHeight : H * 0.4;
-    const sw0 = Math.min(W * (W < 640 ? 0.92 : 0.76), 1500), sh0 = sw0 / start.aspect;
+    const sAsp = start.aspect || 1.6;
+    let sw0 = Math.min(W * (W < 640 ? 0.92 : 0.76), 1500), sh0 = sw0 / sAsp;
+    if (sh0 > H * 0.75) { sh0 = H * 0.75; sw0 = sh0 * sAsp; } // tall designs: limit the height
     const top0 = Math.max(textBottom + 36, H * 0.5);
     const y0 = H / 2 - (top0 + sh0 / 2);
-    const w = lerp(sw0, cw, a), h = lerp(sh0, ch, a);
-    cover(startTex, start.aspect, w / h);
+    // same shape the whole way, so nothing is cut off
+    const h = lerp(sh0, ch, a), w = h * sAsp;
 
     rows.forEach((row) => {
       if (!reduce) row.drift += row.dir * row.speed * dt * slide;
-      const push = row.dir * slide * cw * 0.9;
+      const push = row.dir * slide * ch * 0.6;
       row.tiles.forEach((t) => {
         let x = t.x0 + row.drift + push;
         x = (((x + row.len / 2) % row.len) + row.len) % row.len - row.len / 2; // wrap around
