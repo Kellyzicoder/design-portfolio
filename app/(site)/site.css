@@ -175,3 +175,6 @@ footer a{color:inherit}
 .viewer-img .v-full{opacity:0;transition:opacity .25s ease}
 .viewer-img .v-full.ready{opacity:1}
 @media (prefers-reduced-motion:reduce){.viewer-img .v-full,.masonry img{transition:none}}
+
+/* Work section: posters keep their real shape (no cropping) */
+.masonry .empty{column-span:all}
