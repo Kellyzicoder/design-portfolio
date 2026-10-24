@@ -1,6 +1,7 @@
 import Portfolio from '@/components/Portfolio';
 import { client, SETTINGS_QUERY, POSTERS_QUERY, TESTIMONIALS_QUERY } from '@/lib/sanity';
 import { DEFAULT_SETTINGS, LOCAL_POSTERS, LOCAL_START } from '@/lib/defaults';
+import { nameFromFile } from '@/lib/fileName';
 
 // re-check the CMS for changes at most once a minute
 export const revalidate = 60;
@@ -25,6 +26,8 @@ export default async function Home() {
   const settings = { ...DEFAULT_SETTINGS };
   for (const [k, v] of Object.entries(cms || {})) if (v !== null && v !== '' && v !== undefined) settings[k] = v;
 
+  // posters without a title use their file name
+  if (cmsPosters) cmsPosters = cmsPosters.map((p) => ({ ...p, title: p.title || nameFromFile(p.file) }));
   const posters = cmsPosters && cmsPosters.length ? cmsPosters : LOCAL_POSTERS;
   const start =
     (cms && cms.start && cms.start.url && cms.start) ||
