@@ -3,6 +3,7 @@ import { client, SETTINGS_QUERY, POSTERS_QUERY, TESTIMONIALS_QUERY } from '@/lib
 import { DEFAULT_SETTINGS, LOCAL_POSTERS, LOCAL_START } from '@/lib/defaults';
 import { nameFromFile } from '@/lib/fileName';
 import { SECTIONS_QUERY, buildTree } from '@/lib/sectionTree';
+import { getLatestVideos, channelIdFrom } from '@/lib/youtube';
 
 // re-check the CMS for changes at most once a minute
 export const revalidate = 60;
@@ -36,5 +37,8 @@ export default async function Home() {
     (cms && cms.start && cms.start.url && cms.start) ||
     (cmsPosters && cmsPosters.length ? cmsPosters.find((p) => p.aspect > 1.2) || cmsPosters[0] : LOCAL_START);
 
-  return <Portfolio settings={settings} posters={posters} start={start} testimonials={testimonials || []} sections={buildTree(sectionList)} />;
+  // newest videos from the channel, checked at most once an hour
+  const videos = await getLatestVideos(channelIdFrom(settings.youtubeChannelId) || channelIdFrom(settings.youtubeUrl));
+
+  return <Portfolio videos={videos} settings={settings} posters={posters} start={start} testimonials={testimonials || []} sections={buildTree(sectionList)} />;
 }
