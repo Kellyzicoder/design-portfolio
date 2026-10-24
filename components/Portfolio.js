@@ -31,7 +31,7 @@ function LinkOrText({ href, children }) {
   return href ? <a href={href} target="_blank" rel="noopener noreferrer">{children}</a> : <>{children}</>;
 }
 
-export default function Portfolio({ settings: s, posters, start }) {
+export default function Portfolio({ settings: s, posters, start, testimonials = [] }) {
   /* ---------- Work section ---------- */
   const bySection = useMemo(() => {
     const m = {};
@@ -84,6 +84,7 @@ export default function Portfolio({ settings: s, posters, start }) {
         <a className="brand" href="#top"><img src="/logo.webp" alt="" width="40" height="40" />KELVIN<span>MENSAH</span></a>
         <ul>
           <li><a href="#work">Work</a></li>
+          {testimonials.length > 0 && <li><a href="#kind-words">Kind words</a></li>}
           <li><a href="#about">About</a></li>
           <li><a href="#youtube">YouTube</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -139,6 +140,33 @@ export default function Portfolio({ settings: s, posters, start }) {
             </div>
           </div>
         </section>
+
+        {testimonials.length > 0 && (
+          <section className="block pad" id="kind-words" style={{ paddingTop: 0 }}>
+            <div className="wrap">
+              <div className="work-head">
+                <h2>Kind words</h2>
+                <p className="eyebrow" style={{ margin: 0 }}>From people I've designed for</p>
+              </div>
+              <div className={`quotes${testimonials.length === 1 ? ' single' : ''}`}>
+                {testimonials.map((t) => (
+                  <figure key={t.id} className="quote">
+                    <span className="mark" aria-hidden="true">“</span>
+                    <blockquote>{t.feedback}</blockquote>
+                    <figcaption>
+                      {t.photo ? (
+                        <img src={sized(t.photo, 120)} alt="" width="48" height="48" loading="lazy" style={blur(t)} />
+                      ) : (
+                        <span className="initial" aria-hidden="true">{(t.name || '?').trim().charAt(0)}</span>
+                      )}
+                      <span><b>{t.name}</b>{t.company && <small>{t.company}</small>}</span>
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="pad" id="about">
           <div className="wrap about">

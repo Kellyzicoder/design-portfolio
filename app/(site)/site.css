@@ -120,3 +120,17 @@ footer a{color:inherit}
 .grid img{opacity:0;transition:opacity .4s ease, transform .6s cubic-bezier(.2,.7,.2,1)}
 .grid img.loaded{opacity:1}
 @media (prefers-reduced-motion:reduce){.grid img{transition:none}}
+
+/* Testimonials ("Kind words") */
+.quotes{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:clamp(12px,1.6vw,20px)}
+.quote{margin:0;position:relative;display:flex;flex-direction:column;gap:22px;background:var(--paper);padding:clamp(24px,3vw,36px);box-shadow:0 1px 0 var(--line),0 18px 40px rgba(15,20,40,.06)}
+.quote .mark{font-size:72px;line-height:.6;height:30px;color:var(--blue);font-family:Georgia,"Times New Roman",serif}
+.quote blockquote{margin:0;font-size:clamp(17px,1.5vw,20px);line-height:1.45;letter-spacing:-.01em;color:var(--ink);flex:1}
+.quote figcaption{display:flex;align-items:center;gap:12px;padding-top:18px;border-top:1px solid var(--line)}
+.quote figcaption img,.quote .initial{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none;background-size:cover}
+.quote .initial{display:grid;place-items:center;background:var(--ink);color:#fff;font-weight:600;font-size:18px}
+.quote b{display:block;font-weight:600;font-size:15px}
+.quote small{display:block;color:var(--soft);font-size:13px}
+.quotes.single{grid-template-columns:1fr}
+.quotes.single .quote{padding:clamp(28px,5vw,64px)}
+.quotes.single blockquote{font-size:clamp(24px,3.2vw,40px);line-height:1.2;letter-spacing:-.025em;max-width:28ch}
