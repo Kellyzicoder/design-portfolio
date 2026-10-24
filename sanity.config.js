@@ -8,7 +8,8 @@ import testimonial from './sanity/schemas/testimonial';
 import section from './sanity/schemas/section';
 import { SECTIONS_QUERY, buildTree, pickable, seedSectionsIfEmpty } from './lib/sectionTree';
 import BulkUpload from './sanity/tools/BulkUpload';
-import { UploadIcon } from '@sanity/icons';
+import PosterGrid from './sanity/tools/PosterGrid';
+import { UploadIcon, ThLargeIcon } from '@sanity/icons';
 import { projectId, dataset } from './lib/sanity';
 
 export default defineConfig({
@@ -29,7 +30,11 @@ export default defineConfig({
         : prev,
   },
   // extra page in the top bar of /studio
-  tools: (prev) => [...prev, { name: 'bulk-upload', title: 'Bulk upload', icon: UploadIcon, component: BulkUpload }],
+  tools: (prev) => [
+    ...prev,
+    { name: 'poster-grid', title: 'Poster grid', icon: ThLargeIcon, component: PosterGrid },
+    { name: 'bulk-upload', title: 'Bulk upload', icon: UploadIcon, component: BulkUpload },
+  ],
   plugins: [
     structureTool({
       structure: (S, context) =>
