@@ -32,8 +32,9 @@ export default {
     { name: 'telegramUrl', title: 'Telegram link', type: 'url', group: 'links' },
     { name: 'fiverrUrl', title: 'Fiverr link', type: 'url', group: 'links' },
     { name: 'youtubeUrl', title: 'YouTube channel link', type: 'url', group: 'links' },
-    { name: 'featuredVideoUrl', title: 'YouTube video to show', type: 'url', description: 'Paste any YouTube video link.', group: 'links' },
-    { name: 'featuredVideoTitle', title: 'Video title', type: 'string', group: 'links' },
+    { name: 'featuredVideoUrl', title: 'Pin a YouTube video (optional)', type: 'url', description: 'Leave empty to always show your newest video. Paste a video link to show that one first instead.', group: 'links' },
+    { name: 'featuredVideoTitle', title: 'YouTube section heading', type: 'string', description: 'e.g. "Watch me design."', group: 'links' },
+    { name: 'youtubeChannelId', title: 'YouTube channel ID (advanced)', type: 'string', description: 'Starts with UC. Only change this if you move to a different channel.', group: 'links' },
   ],
   preview: { prepare: () => ({ title: 'Site text & links' }) },
 };

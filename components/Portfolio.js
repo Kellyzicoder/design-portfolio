@@ -31,7 +31,7 @@ function LinkOrText({ href, children }) {
   return href ? <a href={href} target="_blank" rel="noopener noreferrer">{children}</a> : <>{children}</>;
 }
 
-export default function Portfolio({ settings: s, posters, start, testimonials = [], sections }) {
+export default function Portfolio({ settings: s, posters, start, testimonials = [], sections, videos = [] }) {
   const SECTIONS = sections && sections.length ? sections : DEFAULT_SECTIONS;
   /* ---------- Work section ---------- */
   const bySection = useMemo(() => {
@@ -70,7 +70,11 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
     return startWall({ canvas: canvasRef.current, hero: heroRef.current, opener: openerRef.current, posters: wallPosters, start: first });
   }, [posters, start]);
 
-  const vidId = youtubeId(s.featuredVideoUrl);
+  // a pinned video (from the CMS) goes first, then the newest videos from the channel
+  const pinned = youtubeId(s.featuredVideoUrl);
+  const vids = pinned ? [{ id: pinned, title: '', thumb: `https://i.ytimg.com/vi/${pinned}/hqdefault.jpg` }, ...videos.filter((v) => v.id !== pinned)] : videos;
+  const [playing, setPlaying] = useState(0);
+  const current = vids[Math.min(playing, Math.max(vids.length - 1, 0))];
   const paras = (s.aboutText || '').split(/\n\s*\n/).filter(Boolean);
 
   const startUrl = start ? sized(start.url, 1600) : null;
@@ -195,18 +199,31 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
                 <a className="yt-btn" href={s.youtubeUrl} target="_blank" rel="noopener noreferrer"><YtIcon /> Visit my channel</a>
               )}
             </div>
-            {vidId ? (
-              <div className="video-frame">
-                <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${vidId}`}
-                  title={s.featuredVideoTitle || 'YouTube video'}
-                  loading="lazy"
-                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+            {current ? (
+              <div className="video-main">
+                <div className="video-frame">
+                  <iframe
+                    key={current.id}
+                    src={`https://www.youtube-nocookie.com/embed/${current.id}`}
+                    title={current.title || 'YouTube video'}
+                    loading="lazy"
+                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                {vids.length > 1 && (
+                  <div className="video-list" role="list" aria-label="More videos">
+                    {vids.slice(0, 5).map((v, i) => (
+                      <button key={v.id} role="listitem" aria-pressed={i === playing} onClick={() => setPlaying(i)}>
+                        <img src={v.thumb} alt="" loading="lazy" />
+                        {v.title && <span>{v.title}</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="yt-empty">Add a YouTube video link in the CMS and it will show here.</div>
+              <div className="yt-empty">Your newest YouTube videos will show here.</div>
             )}
           </div>
         </section>

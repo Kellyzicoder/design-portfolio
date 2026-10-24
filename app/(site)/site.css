@@ -134,3 +134,13 @@ footer a{color:inherit}
 .quotes.single{grid-template-columns:1fr}
 .quotes.single .quote{padding:clamp(28px,5vw,64px)}
 .quotes.single blockquote{font-size:clamp(24px,3.2vw,40px);line-height:1.2;letter-spacing:-.025em;max-width:28ch}
+
+/* YouTube: player + more videos */
+.video-main{display:flex;flex-direction:column;gap:12px;min-width:0}
+.video-list{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.video-list button{display:flex;flex-direction:column;gap:6px;text-align:left;opacity:.7;transition:opacity .2s}
+.video-list button:hover,.video-list button[aria-pressed="true"]{opacity:1}
+.video-list button[aria-pressed="true"] img{outline:2px solid #ff0000;outline-offset:2px}
+.video-list img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;background:#000}
+.video-list span{font-size:11px;line-height:1.3;color:var(--soft);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media (max-width:760px){.video-list{grid-template-columns:repeat(3,minmax(0,1fr))}.video-list button:nth-child(n+4){display:none}}
