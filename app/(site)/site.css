@@ -115,3 +115,8 @@ footer{background:var(--ink);color:#9aa1ad;padding-block:24px calc(24px + env(sa
 .links a:hover{text-decoration-color:#fff}
 footer a{color:inherit}
 @media (max-width:760px){.video-grid{grid-template-columns:1fr}.links{grid-template-columns:1fr 1fr}}
+
+/* images fade in over their blurred preview */
+.grid img{opacity:0;transition:opacity .4s ease, transform .6s cubic-bezier(.2,.7,.2,1)}
+.grid img.loaded{opacity:1}
+@media (prefers-reduced-motion:reduce){.grid img{transition:none}}

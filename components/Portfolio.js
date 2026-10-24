@@ -6,6 +6,11 @@ import { startWall } from './wall';
 
 // Sanity images can be resized on the fly; local files are used as they are
 export const sized = (url, w) => (url && url.includes('cdn.sanity.io') ? `${url}?w=${w}&fm=webp&q=80` : url);
+// small version for the wall tiles
+const small = (p) => p.thumb || sized(p.url, 520);
+// a blurred preview behind an image, so nothing is ever blank while it loads
+const blur = (p) => (p.lqip ? { backgroundImage: `url(${p.lqip})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined);
+const onImgLoad = (e) => e.currentTarget.classList.add('loaded');
 
 function youtubeId(url) {
   if (!url) return null;
@@ -59,16 +64,22 @@ export default function Portfolio({ settings: s, posters, start }) {
   /* ---------- 3D wall ---------- */
   const heroRef = useRef(null), canvasRef = useRef(null), openerRef = useRef(null);
   useEffect(() => {
-    const wallPosters = posters.filter((p) => p.id !== (start && start.id)).map((p) => ({ url: sized(p.url, 700), aspect: p.aspect || 0.75 }));
-    const first = start ? { url: sized(start.url, 1600), aspect: start.aspect || 1.6 } : wallPosters[0];
+    const wallPosters = posters.filter((p) => p.id !== (start && start.id)).map((p) => ({ url: small(p), lqip: p.lqip, aspect: p.aspect || 0.75 }));
+    const first = start ? { url: sized(start.url, 1600), lqip: start.lqip, aspect: start.aspect || 1.6 } : wallPosters[0];
     return startWall({ canvas: canvasRef.current, hero: heroRef.current, opener: openerRef.current, posters: wallPosters, start: first });
   }, [posters, start]);
 
   const vidId = youtubeId(s.featuredVideoUrl);
   const paras = (s.aboutText || '').split(/\n\s*\n/).filter(Boolean);
 
+  const startUrl = start ? sized(start.url, 1600) : null;
+  // ask the browser for the first design straight away, and the wall images right after
+  const preloads = useMemo(() => posters.slice(0, 14).map(small), [posters]);
+
   return (
     <>
+      {startUrl && <link rel="preload" as="image" href={startUrl} fetchPriority="high" />}
+      {preloads.map((u) => <link key={u} rel="preload" as="image" href={u} />)}
       <nav className="nav pad" aria-label="Main">
         <a className="brand" href="#top"><img src="/logo.webp" alt="" width="40" height="40" />KELVIN<span>MENSAH</span></a>
         <ul>
@@ -121,8 +132,8 @@ export default function Portfolio({ settings: s, posters, start }) {
             <div className="grid">
               {list.length === 0 && <div className="empty">No {active.title} flyers added yet</div>}
               {list.map((p, i) => (
-                <button key={p.id} className={p.aspect > 1.2 ? 'wide' : undefined} onClick={() => setVi(i)}>
-                  <img src={sized(p.url, 800)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" />
+                <button key={p.id} className={p.aspect > 1.2 ? 'wide' : undefined} onClick={() => setVi(i)} style={blur(p)}>
+                  <img src={sized(p.url, 800)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" decoding="async" onLoad={onImgLoad} ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }} />
                 </button>
               ))}
             </div>
@@ -193,7 +204,9 @@ export default function Portfolio({ settings: s, posters, start }) {
         <div id="viewer" role="dialog" aria-label="Poster" onClick={(e) => e.target === e.currentTarget && setVi(-1)}>
           <button className="x" aria-label="Close" onClick={() => setVi(-1)}>✕</button>
           <div className="box">
-            <img src={sized(list[vi].url, 1800)} alt={list[vi].title || `Design ${vi + 1}`} />
+            <img src={sized(list[vi].url, 1800)} alt={list[vi].title || `Design ${vi + 1}`} style={blur(list[vi])} />
+            {/* load the next and previous posters in the background so arrows feel instant */}
+            {[1, -1].map((d) => <link key={d} rel="prefetch" as="image" href={sized(list[(vi + d + list.length) % list.length].url, 1800)} />)}
             <div className="meta">
               <button aria-label="Previous" onClick={() => go(-1)}>◀</button>
               <span>{list[vi].title || active.title} · {vi + 1} / {list.length}</span>

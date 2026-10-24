@@ -20,16 +20,23 @@ export function startWall({ canvas, hero, opener, posters, start }) {
 
   /* textures */
   const CELL_ASPECT = 1 / 1.3; // every wall tile is the same size (width ÷ height)
-  const loader = new THREE.TextureLoader();
-  const maxAniso = renderer.capabilities.getMaxAnisotropy();
+    const maxAniso = renderer.capabilities.getMaxAnisotropy();
   const cover = (t, imgAspect, boxAspect) => { // crop to fill the tile, like object-fit: cover
     if (imgAspect > boxAspect) { t.repeat.set(boxAspect / imgAspect, 1); t.offset.set((1 - t.repeat.x) / 2, 0); }
     else { t.repeat.set(1, imgAspect / boxAspect); t.offset.set(0, (1 - t.repeat.y) / 2); }
   };
   const textures = [];
-  const load = (url) => { const t = loader.load(url); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = maxAniso; textures.push(t); return t; };
-  const pool = (posters.length ? posters : [start]).map((p) => { const t = load(p.url); cover(t, p.aspect, CELL_ASPECT); return t; });
-  const startTex = load(start.url);
+  const imgLoader = new THREE.ImageLoader(); imgLoader.setCrossOrigin('anonymous');
+  // show the tiny blurred preview straight away, then swap in the real image when it arrives
+  const load = (p) => {
+    const t = new THREE.Texture(); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = maxAniso; textures.push(t);
+    const set = (img) => { if (t.userData.ready) t.dispose(); /* new size: let WebGL re-make it */ t.image = img; t.needsUpdate = true; t.userData.ready = true; };
+    if (p.lqip) imgLoader.load(p.lqip, (img) => { if (!t.userData.full) set(img); });
+    imgLoader.load(p.url, (img) => { t.userData.full = true; set(img); });
+    return t;
+  };
+  const pool = (posters.length ? posters : [start]).map((p) => { const t = load(p); cover(t, p.aspect, CELL_ASPECT); return t; });
+  const startTex = load(start);
 
   const geo = new THREE.PlaneGeometry(1, 1);
   const shadowTex = (() => {
@@ -69,6 +76,7 @@ export function startWall({ canvas, hero, opener, posters, start }) {
         sh.position.z = -1;
         const m = new THREE.Mesh(geo, mat({ map: isStart ? startTex : pool[(i + r * 3) % pool.length], transparent: true, toneMapped: false }));
         if (isStart) { m.renderOrder = 3; sh.renderOrder = 2; }
+        if (isStart) { m.material.opacity = 0; sh.material.opacity = 0; }
         holder.add(sh, m); g.add(holder);
         const t = { holder, m, sh, x0: (i - centre) * (cw + gap), isStart };
         tiles.push(t); sizeTile(t, cw, ch);
@@ -116,10 +124,13 @@ export function startWall({ canvas, hero, opener, posters, start }) {
         x = (((x + row.len / 2) % row.len) + row.len) % row.len - row.len / 2; // wrap around
         if (t.isStart) {
           t.holder.position.set(lerp(0, x, a), lerp(y0 - row.y, 0, a), 1);
+          const op = startTex.userData.ready ? Math.min(1, t.m.material.opacity + dt * 4) : 0; // fade in once loaded
+          t.m.material.opacity = op; t.sh.material.opacity = op;
           sizeTile(t, w, h);
         } else {
           t.holder.position.set(x, 0, 0);
-          const o = fade * clamp(1 - (Math.abs(x) / (W * 0.75)) * (1 - fade) * 1.5); // nearer tiles appear first
+          const ready = t.m.material.map.userData.ready ? 1 : 0; // never show an empty tile
+          const o = ready * fade * clamp(1 - (Math.abs(x) / (W * 0.75)) * (1 - fade) * 1.5); // nearer tiles appear first
           t.m.material.opacity = o; t.sh.material.opacity = o;
           const sc = lerp(0.86, 1, fade); t.holder.scale.set(sc, sc, 1);
         }
