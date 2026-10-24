@@ -128,10 +128,10 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
                 ))}
               </div>
             )}
-            <div className="grid">
+            <div className="masonry">
               {list.length === 0 && <div className="empty">No {active.title} flyers added yet</div>}
               {shownList.map((p, i) => (
-                <button key={p.id} className={p.aspect > 1.2 ? 'wide' : undefined} onClick={() => setVi(i)} style={blur(p)}>
+                <button key={p.id} onClick={() => setVi(i)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75) }}>
                   <img src={sized(p.url, 800)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" decoding="async" onLoad={onImgLoad} ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }} />
                 </button>
               ))}
