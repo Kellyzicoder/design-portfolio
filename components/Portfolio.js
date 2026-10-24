@@ -5,7 +5,7 @@ import { SECTIONS } from '@/lib/sections';
 import { startWall } from './wall';
 
 // Sanity images can be resized on the fly; local files are used as they are
-export const sized = (url, w) => (url && url.includes('cdn.sanity.io') ? `${url}?w=${w}&auto=format&q=80` : url);
+export const sized = (url, w) => (url && url.includes('cdn.sanity.io') ? `${url}?w=${w}&fm=webp&q=80` : url);
 
 function youtubeId(url) {
   if (!url) return null;
@@ -70,7 +70,7 @@ export default function Portfolio({ settings: s, posters, start }) {
   return (
     <>
       <nav className="nav pad" aria-label="Main">
-        <a className="brand" href="#top"><img src="/logo.png" alt="" width="40" height="40" />KELVIN<span>MENSAH</span></a>
+        <a className="brand" href="#top"><img src="/logo.webp" alt="" width="40" height="40" />KELVIN<span>MENSAH</span></a>
         <ul>
           <li><a href="#work">Work</a></li>
           <li><a href="#about">About</a></li>
