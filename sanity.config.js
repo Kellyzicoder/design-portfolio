@@ -4,6 +4,7 @@ import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import poster from './sanity/schemas/poster';
 import siteSettings from './sanity/schemas/siteSettings';
+import testimonial from './sanity/schemas/testimonial';
 import { SECTION_OPTIONS } from './lib/sections';
 import { projectId, dataset } from './lib/sanity';
 
@@ -14,7 +15,7 @@ export default defineConfig({
   projectId,
   dataset,
   schema: {
-    types: [poster, siteSettings],
+    types: [poster, siteSettings, testimonial],
     // there is only one "Site text & links" document
     templates: (prev) => prev.filter((t) => t.schemaType !== 'siteSettings'),
   },
@@ -57,6 +58,8 @@ export default defineConfig({
                     )
                   )
               ),
+            S.divider(),
+            S.documentTypeListItem('testimonial').title('Testimonials'),
           ]),
     }),
   ],
