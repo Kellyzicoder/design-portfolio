@@ -61,12 +61,21 @@ export function startWall({ canvas, hero, opener, posters, start }) {
     const mid = (nRows - 1) / 2;
     const minLen = W * 1.6 + ch * 4; // long enough that the wrap-around is never seen
 
+    // share the designs out between the rows (like dealing cards), so the same
+    // design isn't repeated across the wall. A row only repeats its own designs
+    // when there aren't enough to fill it.
+    const rowPools = Array.from({ length: nRows }, () => []);
+    if (pool.length >= nRows) pool.forEach((it, i) => rowPools[i % nRows].push(it));
+    else for (let r = 0; r < nRows; r++) rowPools[r] = pool.map((_, i) => pool[(i + r) % pool.length]);
+
     for (let r = 0; r < nRows; r++) {
       const g = new THREE.Group(); g.position.y = (mid - r) * (ch + gap); wall.add(g);
       const items = [];
       if (r === mid) items.push({ tex: startTex, aspect: start.aspect || 1.6, isStart: true });
-      for (let k = 0, len = 0; len < minLen || k < 3; k++) {
-        const it = pool[(k + r * 3) % pool.length];
+      const own = rowPools[r];
+      // use every design this row was given, and keep going (repeating) only if the row is still too short
+      for (let k = 0, len = 0; len < minLen || k < Math.max(3, own.length); k++) {
+        const it = own[k % own.length];
         items.push(it); len += ch * it.aspect + gap;
       }
       // lay the row out left to right, then centre it (the start design sits at x = 0)
