@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { set, unset, useClient } from 'sanity';
 import { Card, Flex, Radio, Spinner, Stack, Text } from '@sanity/ui';
-import { SECTIONS_QUERY, buildTree, pickable, seedSectionsIfEmpty } from '../../lib/sectionTree';
+import { fetchSections, buildTree, pickable, seedSectionsIfEmpty } from '../../lib/sectionTree';
 
 // The list of sections comes from the CMS, so new sections show up here straight away.
 export function useSectionOptions() {
@@ -13,7 +13,7 @@ export function useSectionOptions() {
     let alive = true;
     const load = async () => {
       await seedSectionsIfEmpty(client).catch(() => {});
-      const list = await client.fetch(SECTIONS_QUERY);
+      const list = await fetchSections(client);
       if (alive) setOptions(pickable(buildTree(list)));
     };
     load();
