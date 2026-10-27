@@ -65,7 +65,9 @@ export function startWall({ canvas, hero, opener, posters, start }) {
     // design isn't repeated across the wall. A row only repeats its own designs
     // when there aren't enough to fill it.
     const rowPools = Array.from({ length: nRows }, () => []);
-    if (pool.length >= nRows) pool.forEach((it, i) => rowPools[i % nRows].push(it));
+    // each row gets its own run of the (already mixed) list
+    if (pool.length >= nRows) { const per = Math.ceil(pool.length / nRows); for (let r = 0; r < nRows; r++) rowPools[r] = pool.slice(r * per, (r + 1) * per); }
+    for (let r = 0; r < nRows; r++) if (!rowPools[r].length) rowPools[r] = pool.slice(0, Math.max(1, pool.length));
     else for (let r = 0; r < nRows; r++) rowPools[r] = pool.map((_, i) => pool[(i + r) % pool.length]);
 
     for (let r = 0; r < nRows; r++) {
