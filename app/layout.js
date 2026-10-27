@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Kelvin Mensah',
-  description: 'Graphic design portfolio of Kelvin Mensah: church flyers, birthday flyers, social media posts and banners.',
+  description: 'Kelvin Mensah (Kelv Studio), Auckland graphic designer: logos, brand identities, event flyers, banners and social media design.',
 };
 
 export default function RootLayout({ children }) {
