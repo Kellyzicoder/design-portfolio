@@ -60,7 +60,12 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
   useEffect(() => {
     // only the designs ticked "Show in the opening wall"; if none are ticked, use them all
     const picked = posters.filter((p) => p.onWall);
-    const wallPosters = (picked.length ? picked : posters).filter((p) => p.id !== (start && start.id)).map((p) => ({ url: small(p), lqip: p.lqip, aspect: p.aspect || 0.75 }));
+    // mix the sections (one birthday, one church, one logo, ...) so a row isn't all one kind
+    const groups = {};
+    (picked.length ? picked : posters).filter((p) => p.id !== (start && start.id)).forEach((p) => { (groups[p.section] = groups[p.section] || []).push(p); });
+    const lists = Object.values(groups), mixed = [];
+    for (let i = 0; mixed.length < lists.reduce((n, l) => n + l.length, 0); i++) lists.forEach((l) => l[i] && mixed.push(l[i]));
+    const wallPosters = mixed.map((p) => ({ url: small(p), lqip: p.lqip, aspect: p.aspect || 0.75 }));
     const first = start ? { url: sized(start.url, 1600), lqip: start.lqip, aspect: start.aspect || 1.6 } : wallPosters[0];
     return startWall({ canvas: canvasRef.current, hero: heroRef.current, opener: openerRef.current, posters: wallPosters, start: first });
   }, [posters, start]);
