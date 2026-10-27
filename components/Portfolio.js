@@ -232,6 +232,10 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
           <div className="wrap">
             <p className="eyebrow">Contact</p>
             <h2>{s.contactHeading}</h2>
+            <div className="cta-row">
+              <a className="btn btn-light" href="/request">Request a design</a>
+              <a className="btn btn-ghost" href="/contract">Sign the design agreement</a>
+            </div>
             <div className="links">
               {s.email && <div><small>Email</small><a href={`mailto:${s.email}`}>{s.email}</a></div>}
               <div><small>Hire me</small><LinkOrText href={s.fiverrUrl}>Fiverr</LinkOrText></div>

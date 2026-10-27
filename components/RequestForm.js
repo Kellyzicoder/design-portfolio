@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const MAX_FILES = 3;
 
@@ -23,6 +23,13 @@ export default function RequestForm({ types }) {
   const [error, setError] = useState('');
   const [files, setFiles] = useState([]);
   const started = useRef(Date.now());
+  const [utm, setUtm] = useState({ source: '', campaign: '' });
+
+  // ad links can carry ?utm_source=instagram&utm_campaign=easter so you can see which ads bring requests
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    setUtm({ source: q.get('utm_source') || '', campaign: q.get('utm_campaign') || '' });
+  }, []);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -57,6 +64,8 @@ export default function RequestForm({ types }) {
     <form className="form" onSubmit={onSubmit}>
       {/* hidden from people; bots fill it in */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hp" aria-hidden="true" />
+      <input type="hidden" name="utm_source" value={utm.source} />
+      <input type="hidden" name="utm_campaign" value={utm.campaign} />
 
       <fieldset>
         <legend>About you</legend>
@@ -122,6 +131,22 @@ export default function RequestForm({ types }) {
             {files.length > 0 && <small>{files.map((f) => f.name).join(', ')}</small>}
           </label>
         </div>
+        <label className="field">
+          <span>How did you hear about me?</span>
+          <select name="source" defaultValue="">
+            <option value="">Choose one…</option>
+            <option>Google search</option>
+            <option>Google Maps</option>
+            <option>Instagram</option>
+            <option>Facebook</option>
+            <option>TikTok</option>
+            <option>YouTube</option>
+            <option>An ad</option>
+            <option>Church or a friend</option>
+            <option>Fiverr</option>
+            <option>Other</option>
+          </select>
+        </label>
       </fieldset>
 
       {state === 'error' && <p className="form-error" role="alert">{error}</p>}

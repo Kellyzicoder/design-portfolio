@@ -6,6 +6,7 @@ export default {
     { name: 'top', title: 'Top of page', default: true },
     { name: 'about', title: 'About' },
     { name: 'links', title: 'Contact & YouTube' },
+    { name: 'forms', title: 'Forms & contract' },
   ],
   fields: [
     { name: 'headline', title: 'Big headline', type: 'string', group: 'top' },
@@ -34,6 +35,15 @@ export default {
     { name: 'featuredVideoUrl', title: 'Pin a YouTube video (optional)', type: 'url', description: 'Leave empty to always show your newest video. Paste a video link to show that one first instead.', group: 'links' },
     { name: 'featuredVideoTitle', title: 'YouTube section heading', type: 'string', description: 'e.g. "Watch me design."', group: 'links' },
     { name: 'youtubeChannelId', title: 'YouTube channel ID (advanced)', type: 'string', description: 'Starts with UC. Only change this if you move to a different channel.', group: 'links' },
+
+    {
+      name: 'contractTerms',
+      title: 'Design agreement wording',
+      type: 'text',
+      rows: 24,
+      group: 'forms',
+      description: 'Shown on /contract for clients to sign. Leave an empty line between parts. A line starting with a number (e.g. "2. Payment") becomes a heading. Leave empty to use the starting wording.',
+    },
   ],
   preview: { prepare: () => ({ title: 'Site text & links' }) },
 };
