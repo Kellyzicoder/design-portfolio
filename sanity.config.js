@@ -6,7 +6,7 @@ import poster from './sanity/schemas/poster';
 import siteSettings from './sanity/schemas/siteSettings';
 import testimonial from './sanity/schemas/testimonial';
 import section from './sanity/schemas/section';
-import { SECTIONS_QUERY, buildTree, pickable, seedSectionsIfEmpty } from './lib/sectionTree';
+import { fetchSections, buildTree, pickable, seedSectionsIfEmpty } from './lib/sectionTree';
 import BulkUpload from './sanity/tools/BulkUpload';
 import PosterGrid from './sanity/tools/PosterGrid';
 import { UploadIcon, ThLargeIcon } from '@sanity/icons';
@@ -53,7 +53,7 @@ export default defineConfig({
               .child(async () => {
                 const client = context.getClient({ apiVersion: '2024-10-01' });
                 await seedSectionsIfEmpty(client).catch(() => {});
-                const options = pickable(buildTree(await client.fetch(SECTIONS_QUERY)));
+                const options = pickable(buildTree(await fetchSections(client)));
                 return S.list()
                   .title('Posters by section')
                   .items(
