@@ -60,13 +60,13 @@ export default function ContractForm({ parts }) {
           </div>
           <div className="row2">
             <label className="field"><span>Phone</span><input name="phone" type="tel" autoComplete="tel" /></label>
-            <label className="field"><span>Church, business or event name</span><input name="organisation" /></label>
+            <label className="field"><span>Business, brand or event name</span><input name="organisation" /></label>
           </div>
         </fieldset>
 
         <fieldset>
           <legend>The project</legend>
-          <label className="field"><span>What is being designed? *</span><input name="project" required placeholder="e.g. Easter Sunday flyer + Instagram story" /></label>
+          <label className="field"><span>What is being designed? *</span><input name="project" required placeholder="e.g. Logo and brand kit, or event flyer + Instagram story" /></label>
           <div className="row2">
             <label className="field"><span>Agreed price (NZ$)</span><input name="price" inputMode="decimal" placeholder="e.g. 80" /></label>
             <label className="field"><span>Delivery date</span><input name="deadline" type="date" /></label>

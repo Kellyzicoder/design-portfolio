@@ -53,7 +53,7 @@ export default function RequestForm({ types }) {
     return (
       <div className="form-done">
         <h2>Thanks, your request is in.</h2>
-        <p>I’ll get back to you soon with a price and timeline, usually within a day.</p>
+        <p>I’ll come back to you with a price, a timeline and a plan for your design.</p>
         <p>Ready to go ahead? You can <a href="/contract">sign the design agreement</a> now or after we’ve talked.</p>
         <a className="btn" href="/">Back to the portfolio</a>
       </div>
@@ -75,7 +75,7 @@ export default function RequestForm({ types }) {
         </div>
         <div className="row2">
           <label className="field"><span>Phone</span><input name="phone" type="tel" autoComplete="tel" /></label>
-          <label className="field"><span>Church, business or event name</span><input name="organisation" /></label>
+          <label className="field"><span>Business, brand or event name</span><input name="organisation" /></label>
         </div>
       </fieldset>
 
@@ -109,7 +109,7 @@ export default function RequestForm({ types }) {
         </div>
         <label className="field">
           <span>Details *</span>
-          <textarea name="details" rows={6} required placeholder="What should it say? Names, dates, times, place, speakers, colours, anything you have in mind." />
+          <textarea name="details" rows={6} required placeholder="What is it for? What should it say? Names, dates, place, colours, the feeling you want, anything you have in mind." />
         </label>
         <div className="row2">
           <label className="field">

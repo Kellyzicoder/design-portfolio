@@ -15,8 +15,8 @@ export default async function ContractPage() {
         <div className="wrap narrow">
           <a className="back" href="/#contact">← Back</a>
           <p className="eyebrow">Design agreement</p>
-          <h1>Let’s make it official.</h1>
-          <p className="lead">Please read the terms, fill in the project details and sign by typing your name. You’ll get a PDF copy straight away.</p>
+          <h1>Let’s lock it in.</h1>
+          <p className="lead">Read the terms, add the project details and sign by typing your name. You’ll get a signed PDF copy straight away.</p>
           <ContractForm parts={contractParts(settings.contractTerms)} />
         </div>
       </main>
