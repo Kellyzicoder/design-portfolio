@@ -29,6 +29,13 @@ export default {
       description: 'Shown when someone opens the poster. Leave empty to use the file name.',
     },
     {
+      name: 'onWall',
+      title: 'Show in the opening wall',
+      type: 'boolean',
+      description: 'Tick the designs you want in the moving wall at the top of the site. If none are ticked, every design is used.',
+      initialValue: false,
+    },
+    {
       name: 'order',
       title: 'Order (optional)',
       type: 'number',
@@ -36,12 +43,12 @@ export default {
     },
   ],
   preview: {
-    select: { title: 'title', file: 'image.asset.originalFilename', section: 'section', media: 'image' },
-    prepare({ title, file, section, media }) {
+    select: { title: 'title', file: 'image.asset.originalFilename', section: 'section', media: 'image', onWall: 'onWall' },
+    prepare({ title, file, section, media, onWall }) {
       // custom sections show their short ID, e.g. "weddings" -> "Weddings"
       const s = SECTION_OPTIONS.find((o) => o.value === section);
       const label = s ? s.title : section ? section.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase()) : 'No section';
-      return { title: title || nameFromFile(file) || 'Untitled poster', subtitle: label, media };
+      return { title: title || nameFromFile(file) || 'Untitled poster', subtitle: onWall ? `${label} · on wall` : label, media };
     },
   },
 };
