@@ -28,6 +28,7 @@ export default {
     { name: 'education', title: 'Education', type: 'string', group: 'about' },
 
     { name: 'contactHeading', title: 'Contact heading', type: 'string', group: 'links' },
+    { name: 'email', title: 'Email', type: 'string', description: 'Shown in the Contact section. People can tap it to email you.', group: 'links' },
     { name: 'telegramName', title: 'Telegram channel name', type: 'string', group: 'links' },
     { name: 'telegramUrl', title: 'Telegram link', type: 'url', group: 'links' },
     { name: 'fiverrUrl', title: 'Fiverr link', type: 'url', group: 'links' },
