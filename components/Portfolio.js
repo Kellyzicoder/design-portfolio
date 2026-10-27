@@ -234,7 +234,6 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
             <h2>{s.contactHeading}</h2>
             <div className="links">
               {s.email && <div><small>Email</small><a href={`mailto:${s.email}`}>{s.email}</a></div>}
-              <div><small>Telegram channel</small><LinkOrText href={s.telegramUrl}>{s.telegramName}</LinkOrText></div>
               <div><small>Hire me</small><LinkOrText href={s.fiverrUrl}>Fiverr</LinkOrText></div>
               <div><small>YouTube</small><LinkOrText href={s.youtubeUrl}>My channel</LinkOrText></div>
               <div><small>Based in</small>{s.location}</div>
