@@ -70,7 +70,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
   /* ---------- poster viewer ---------- */
   const [vi, setVi] = useState(-1);
   const open = vi >= 0 && vi < list.length;
-  const LIMIT = isFeatured ? 12 : 8; // posters shown per tab before "Show all"
+  const LIMIT = isFeatured ? 18 : 16; // posters shown per tab before "Show all"
   const shownList = list.slice(0, LIMIT);
   useEffect(() => setVi(-1), [cat, sub]);
 
@@ -153,7 +153,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
               {list.length === 0 && <div className="empty">No {active.title} designs added yet</div>}
               {shownList.map((p, i) => (
                 <button key={p.id} onClick={() => setVi(i)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75), '--i': i }}>
-                  <img src={sized(p.url, isFeatured ? 1000 : 800)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" decoding="async" onLoad={onImgLoad} ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }} />
+                  <img src={sized(p.url, isFeatured ? 600 : 400)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" decoding="async" onLoad={onImgLoad} ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }} />
                   <span className="cap"><b>{p.title}</b><small>{sectionName[p.section] || ''}</small></span>
                 </button>
               ))}
