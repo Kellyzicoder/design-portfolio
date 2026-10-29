@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { SECTIONS as DEFAULT_SECTIONS } from '@/lib/sections';
 import { startWall } from './wall';
 import Viewer from './Viewer';
+import SiteNav from './SiteNav';
 import { spread, mixSections } from '@/lib/spread';
 
 // Sanity images can be resized on the fly; local files are used as they are
@@ -99,17 +100,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
     <>
       {startUrl && <link rel="preload" as="image" href={startUrl} fetchPriority="high" />}
       {preloads.map((u) => <link key={u} rel="preload" as="image" href={u} />)}
-      <nav className="nav pad" aria-label="Main">
-        <a className="brand" href="#top"><img src="/logo.webp" alt="" width="40" height="40" />KELVIN<span>MENSAH</span></a>
-        <ul>
-          <li><a href="#work">Work</a></li>
-          {testimonials.length > 0 && <li><a href="#kind-words">Kind words</a></li>}
-          <li><a href="#about">About</a></li>
-          <li><a href="#youtube">YouTube</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-        <a className="hire" href={s.fiverrUrl || '#contact'} {...(s.fiverrUrl ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>Hire me</a>
-      </nav>
+      <SiteNav settings={s} home extra={testimonials.length > 0 ? [{ href: '#kind-words', label: 'Kind words' }] : []} />
 
       <div className="hero" id="top" ref={heroRef}>
         <div className="sticky">

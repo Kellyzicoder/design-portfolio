@@ -1,15 +1,31 @@
-// Top bar for the extra pages (request form, contract).
-export default function SiteNav({ settings: s }) {
+// Floating pill navbar used on every page: logo, links, and an email button on the right.
+export default function SiteNav({ settings: s, home = false, extra = [] }) {
+  const base = home ? '' : '/';
+  const links = [
+    { href: `${base}#work`, label: 'Work' },
+    ...extra.map((x) => ({ href: `${base}${x.href}`, label: x.label })),
+    { href: `${base}#about`, label: 'About' },
+    { href: `${base}#youtube`, label: 'YouTube' },
+    { href: `${base}#contact`, label: 'Contact' },
+  ];
+  const email = s.email;
+  const cta = email
+    ? { href: `mailto:${email}`, long: email, short: 'Email me' }
+    : { href: s.fiverrUrl || `${base}#contact`, long: 'Hire me', short: 'Hire me', ext: !!s.fiverrUrl };
+
   return (
-    <nav className="nav pad" aria-label="Main">
-      <a className="brand" href="/"><img src="/logo.webp" alt="" width="40" height="40" />KELVIN<span>MENSAH</span></a>
-      <ul>
-        <li><a href="/#work">Work</a></li>
-        <li><a href="/#about">About</a></li>
-        <li><a href="/#youtube">YouTube</a></li>
-        <li><a href="/#contact">Contact</a></li>
-      </ul>
-      <a className="hire" href={s.fiverrUrl || '/#contact'} {...(s.fiverrUrl ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>Hire me</a>
+    <nav className="nav" aria-label="Main">
+      <div className="nav-pill">
+        <a className="nav-logo" href={home ? '#top' : '/'} aria-label="Kelvin Mensah, home">
+          <img src="/logo.webp" alt="" width="40" height="40" />
+        </a>
+        <ul>
+          {links.map((l) => <li key={l.href}><a href={l.href}>{l.label}</a></li>)}
+        </ul>
+        <a className="nav-cta" href={cta.href} {...(cta.ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+          <span className="long">{cta.long}</span><span className="short">{cta.short}</span>
+        </a>
+      </div>
     </nav>
   );
 }
