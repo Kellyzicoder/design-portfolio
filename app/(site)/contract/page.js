@@ -11,6 +11,7 @@ export default async function ContractPage() {
   return (
     <>
       <SiteNav settings={settings} />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mrs+Saint+Delafield&display=swap" />
       <main className="pad form-page">
         <div className="wrap narrow">
           <a className="back" href="/#contact">← Back</a>

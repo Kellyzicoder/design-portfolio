@@ -36,15 +36,24 @@ export async function POST(req) {
   const parts = contractParts(terms);
   const signedAt = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', dateStyle: 'long', timeStyle: 'short' });
   const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim();
+  const nzDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'Pacific/Auckland' }).format(new Date()); // YYYY-MM-DD
+  const signedDate = new Date(`${nzDay}T12:00:00Z`).toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  // agreement number, e.g. KS-20261029-4F7Q
+  const ref = `KS-${nzDay.replace(/-/g, '')}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
 
   let bytes;
   try {
-    bytes = Buffer.from(await contractPdf({ parts, c: { ...c, ip }, signedAt }));
+    bytes = Buffer.from(await contractPdf({ parts, c: { ...c, ip, ref }, signedAt, signedDate }));
   } catch (e) {
     console.error('PDF failed', e);
     return NextResponse.json({ error: 'Sorry, the agreement could not be created. Please try again.' }, { status: 500 });
   }
-  const filename = `Kelv-Studio-agreement-${safeName(c.name)}.pdf`;
+  const filename = `Kelv-Studio-Agreement-${ref}-${safeName(c.name)}.pdf`;
+
+  // test versions only: ?preview=1 returns the PDF without saving, emailing or notifying
+  if (process.env.VERCEL_ENV !== 'production' && new URL(req.url).searchParams.get('preview') === '1') {
+    return NextResponse.json({ ok: true, filename, pdf: bytes.toString('base64') });
+  }
 
   let saved = false, emailed = false;
   const problems = [];
@@ -62,12 +71,12 @@ export async function POST(req) {
 
   try {
     await sendEmail({
-      subject: `Signed agreement: ${c.project} (${c.name})`,
+      subject: `Signed agreement ${ref}: ${c.project} (${c.name})`,
       replyTo: c.email,
       html: `<h2 style="font-family:Arial,sans-serif">Design agreement signed</h2>${table([
         ['Client', c.name], ['Email', c.email], ['Phone', c.phone], ['Church / business', c.organisation],
         ['Project', c.project], ['Agreed price', c.price != null ? `NZ$${c.price.toFixed(2)}` : ''], ['Delivery date', c.deadline],
-        ['Signed', `${c.signature} · ${signedAt}`],
+        ['Agreement no.', ref], ['Signed', `${c.signature} · ${signedAt}`],
       ])}<p style="font-family:Arial,sans-serif;color:#5d6470">The signed PDF is attached.</p>`,
       attachments: [{ filename, content: bytes.toString('base64') }],
     });

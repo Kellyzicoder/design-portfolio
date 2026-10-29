@@ -232,3 +232,58 @@ footer a{color:inherit}
 .masonry .cap{padding:30px 10px 8px}
 .masonry .cap b{font-size:12px}
 .masonry .cap small{font-size:9.5px}
+
+/* ---------- design agreement (stepped) ---------- */
+.agree{display:grid;gap:18px;scroll-margin-top:90px}
+.agree-steps{list-style:none;margin:0;padding:8px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:999px;box-shadow:0 10px 30px rgba(15,20,40,.06)}
+.agree-steps button{display:flex;align-items:center;gap:10px;width:100%;padding:6px 10px 6px 6px;border-radius:999px;text-align:left;min-height:52px}
+.agree-steps button:disabled{cursor:default}
+.agree-steps .dot{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);font-weight:600;font-size:14px;color:var(--soft);background:#fff}
+.agree-steps .dot svg{width:16px;height:16px}
+.agree-steps .lbl{display:grid;line-height:1.2;font-size:14px;font-weight:600;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agree-steps .lbl small{font-size:11px;font-weight:400;color:var(--soft)}
+.agree-steps li.done .dot{background:#e9f7ee;border-color:#bfe6cc;color:#178a46}
+.agree-steps li.now .dot{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(47,47,228,.35)}
+.agree-steps li:not(.now):not(.done) .lbl{color:var(--soft)}
+.agree-card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,36px);display:grid;gap:18px;box-shadow:0 10px 40px rgba(15,20,40,.06)}
+.agree-card section{display:grid;gap:16px}
+.agree-card h2{margin:0;font-weight:500;font-size:clamp(24px,3vw,30px);letter-spacing:-.025em}
+.agree-sub{margin:-10px 0 4px;color:var(--soft)}
+.agree-note{margin:0;padding:12px 14px;border-radius:12px;background:#eef0ff;color:#2a2a8f;font-size:14px}
+.clauses{list-style:none;margin:0;padding:0;display:grid;gap:10px;max-height:min(58vh,560px);overflow:auto;padding-right:4px}
+.clauses li{display:flex;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#fbfbfc}
+.clauses .num{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#eef0ff;color:var(--blue);font-weight:700;font-size:13px}
+.clauses h3{margin:3px 0 4px;font-size:15px;font-weight:600}
+.clauses p{margin:0;color:#3a3f48;font-size:14.5px;line-height:1.6}
+.agree-check{padding:14px 16px;border-radius:14px;background:var(--bg)}
+.overview{border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:14px;background:#fbfbfc}
+.ov-head{display:flex;align-items:center;gap:12px}
+.ov-head b{display:block;font-size:16px}
+.ov-head small{color:var(--soft);font-size:13px}
+.ov-doc{display:grid;place-items:center;width:44px;height:52px;border-radius:8px;background:#fdecee;color:#c62b35;font-size:10px;font-weight:800;letter-spacing:.06em}
+.ov-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ov-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:2px;align-content:start;min-width:0}
+.ov-box small{color:var(--soft);font-size:12px;margin-top:6px}
+.ov-box small:first-child{margin-top:0}
+.ov-box p{margin:0;overflow-wrap:anywhere}
+.ov-box .muted{color:var(--soft);font-size:13px}
+.tag{display:inline-block;margin-left:4px;padding:1px 8px;border-radius:999px;font-size:11.5px;font-weight:500;background:#e9f7ee;color:#178a46;border:1px solid #bfe6cc;vertical-align:1px}
+.tag.blue{background:#eaf1ff;color:#2a5bd7;border-color:#c6d6fb}
+.sig-preview{display:grid;justify-items:start;gap:4px;padding:8px 4px 0}
+.sig-name{font-family:"Mrs Saint Delafield","Brush Script MT",cursive;font-size:clamp(40px,7vw,56px);line-height:1;min-height:56px;color:#14183a}
+.sig-line{width:min(100%,360px);height:1px;background:var(--ink)}
+.sig-cap{font-size:12px;color:var(--soft)}
+.agree-nav{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:18px}
+.btn-quiet{background:transparent;color:var(--ink);border-color:var(--line)}
+.agree-done{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:clamp(24px,5vw,44px);display:grid;gap:14px;justify-items:start;box-shadow:0 10px 40px rgba(15,20,40,.06)}
+.agree-done-icon{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#e9f7ee;color:#178a46}
+.agree-done-icon svg{width:26px;height:26px}
+.agree-done h2{margin:0;font-weight:500;font-size:clamp(28px,4vw,40px);letter-spacing:-.03em}
+.agree-done p{margin:0;color:var(--soft);max-width:56ch}
+.agree-link{color:var(--ink);font-size:14px}
+@media (max-width:760px){
+  .agree-steps{border-radius:18px;grid-template-columns:repeat(4,minmax(0,1fr))}
+  .agree-steps .lbl{display:none}
+  .agree-steps button{justify-content:center;padding:4px}
+  .ov-grid{grid-template-columns:1fr}
+}
