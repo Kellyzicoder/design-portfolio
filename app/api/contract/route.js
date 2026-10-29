@@ -61,10 +61,18 @@ export async function POST(req) {
   if (dbReady) {
     try {
       const path = await uploadFile(`contracts/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}-${filename}`, bytes, 'application/pdf');
-      await insertRow('contracts', {
-        ...c, terms: terms || parts.map((p) => [p.heading, p.body].filter(Boolean).join('\n')).join('\n\n'),
+      const row = {
+        ...c, ref, terms: terms || parts.map((p) => [p.heading, p.body].filter(Boolean).join('\n')).join('\n\n'),
         ip, user_agent: str(req.headers.get('user-agent'), 300), pdf_path: path,
-      });
+      };
+      try {
+        await insertRow('contracts', row);
+      } catch (e) {
+        // the "ref" column isn't in the database yet (supabase/contract-ref.sql not run): save without it
+        if (!/ref/.test(e.message)) throw e;
+        const { ref: _skip, ...rest } = row;
+        await insertRow('contracts', rest);
+      }
       saved = true;
     } catch (e) { problems.push(e.message); }
   }

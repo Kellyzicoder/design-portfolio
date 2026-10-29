@@ -152,7 +152,7 @@ export default function ContractForm({ parts }) {
         {step === 3 && (
           <section>
             <h2>Review &amp; sign</h2>
-            <p className="agree-sub">Check the summary, then sign by typing your full name.</p>
+            <p className="agree-sub">Check the summary, then sign by typing your full name. Kelv Studio will confirm the price and delivery date with you in writing.</p>
 
             <div className="overview">
               <div className="ov-head">
