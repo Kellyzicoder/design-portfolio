@@ -137,7 +137,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
               <div className="cats" role="group" aria-label="Sections">
                 {TABS.map((sec) => (
                   <button key={sec.id} aria-pressed={cat.id === sec.id} onClick={() => pick(sec)}>
-                    {sec.title}<span className="n">{count(sec)}</span>
+                    {sec.title}{sec.id !== 'featured' && <span className="n">{count(sec)}</span>}
                   </button>
                 ))}
               </div>
