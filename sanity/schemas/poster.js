@@ -36,6 +36,13 @@ export default {
       initialValue: false,
     },
     {
+      name: 'featured',
+      title: 'Show in Featured (Work section)',
+      type: 'boolean',
+      description: 'Featured is the first tab people see in Work. Tick your best pieces. If none are ticked, a mix of every section is shown.',
+      initialValue: false,
+    },
+    {
       name: 'order',
       title: 'Order (optional)',
       type: 'number',
@@ -43,12 +50,12 @@ export default {
     },
   ],
   preview: {
-    select: { title: 'title', file: 'image.asset.originalFilename', section: 'section', media: 'image', onWall: 'onWall' },
-    prepare({ title, file, section, media, onWall }) {
+    select: { title: 'title', file: 'image.asset.originalFilename', section: 'section', media: 'image', onWall: 'onWall', featured: 'featured' },
+    prepare({ title, file, section, media, onWall, featured }) {
       // custom sections show their short ID, e.g. "weddings" -> "Weddings"
       const s = SECTION_OPTIONS.find((o) => o.value === section);
       const label = s ? s.title : section ? section.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase()) : 'No section';
-      return { title: title || nameFromFile(file) || 'Untitled poster', subtitle: onWall ? `${label} · on wall` : label, media };
+      return { title: title || nameFromFile(file) || 'Untitled poster', subtitle: [label, featured && 'featured', onWall && 'on wall'].filter(Boolean).join(' · '), media };
     },
   },
 };
