@@ -10,8 +10,8 @@ export default function SiteNav({ settings: s, home = false, extra = [] }) {
   ];
   const email = s.email;
   const cta = email
-    ? { href: `mailto:${email}`, long: email, short: 'Email me' }
-    : { href: s.fiverrUrl || `${base}#contact`, long: 'Hire me', short: 'Hire me', ext: !!s.fiverrUrl };
+    ? { href: `mailto:${email}`, long: 'Contact me', short: 'Contact me' }
+    : { href: s.fiverrUrl || `${base}#contact`, long: 'Contact me', short: 'Contact me', ext: !!s.fiverrUrl };
 
   return (
     <nav className="nav" aria-label="Main">
