@@ -6,7 +6,6 @@ export default function SiteNav({ settings: s, home = false, extra = [] }) {
     ...extra.map((x) => ({ href: `${base}${x.href}`, label: x.label })),
     { href: `${base}#about`, label: 'About' },
     { href: `${base}#youtube`, label: 'YouTube' },
-    { href: `${base}#contact`, label: 'Contact' },
   ];
   const email = s.email;
   const cta = email
