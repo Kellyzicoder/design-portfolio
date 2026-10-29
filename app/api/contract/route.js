@@ -4,6 +4,7 @@ import { insertRow, uploadFile, dbReady, safeName } from '@/lib/db';
 import { contractParts } from '@/lib/contract';
 import { contractPdf } from '@/lib/contractPdf';
 import { getSiteData } from '@/lib/getSiteData';
+import { notifyCrm } from '@/lib/notify';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -78,5 +79,10 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Sorry, the agreement could not be sent right now. Please try again later.' }, { status: 500 });
   }
   if (problems.length) console.warn('Contract form partly failed:', problems);
+  await notifyCrm({
+    title: 'Agreement signed',
+    body: `${c.name}: ${c.project}${c.price != null ? ` · NZ$${c.price.toFixed(2)}` : ''}`,
+    url: '/orders',
+  });
   return NextResponse.json({ ok: true, filename, pdf: bytes.toString('base64') });
 }

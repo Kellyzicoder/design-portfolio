@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sendEmail, table, esc, isEmail } from '@/lib/email';
 import { insertRow, uploadFile, dbReady, safeName } from '@/lib/db';
+import { notifyCrm } from '@/lib/notify';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -42,7 +43,7 @@ export async function POST(req) {
   }
   const filesData = await Promise.all(files.map(async (f) => ({ name: safeName(f.name), type: f.type, bytes: Buffer.from(await f.arrayBuffer()) })));
 
-  let saved = false, emailed = false;
+  let saved = false, emailed = false, savedId = null;
   const problems = [];
 
   if (dbReady) {
@@ -50,7 +51,8 @@ export async function POST(req) {
       const stamp = new Date().toISOString().slice(0, 10);
       const paths = [];
       for (const f of filesData) paths.push(await uploadFile(`requests/${stamp}/${crypto.randomUUID()}-${f.name}`, f.bytes, f.type));
-      await insertRow('requests', { ...r, files: paths });
+      const row = await insertRow('requests', { ...r, files: paths });
+      savedId = row && row.id;
       saved = true;
     } catch (e) { problems.push(e.message); }
   }
@@ -75,5 +77,12 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Sorry, your request could not be sent right now. Please email kelvstudio.design@gmail.com instead.' }, { status: 500 });
   }
   if (problems.length) console.warn('Request form partly failed:', problems);
+  const from = r.utm_source ? `ad: ${r.utm_source}` : r.source;
+  await notifyCrm({
+    title: `New request: ${r.design_type}`,
+    body: `${r.name}${r.organisation ? ` (${r.organisation})` : ''}${from ? ` · from ${from}` : ''}${r.deadline ? ` · needs it ${r.deadline}` : ''}`,
+    url: savedId ? `/requests/${savedId}` : '/requests',
+    tag: savedId ? `req-${savedId}` : undefined,
+  });
   return NextResponse.json({ ok: true });
 }
