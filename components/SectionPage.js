@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Viewer, { sized, GRID_W } from './Viewer';
+import SiteNav from './SiteNav';
 
 const blur = (p) => (p.lqip ? { backgroundImage: `url(${p.lqip})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined);
 const onImgLoad = (e) => e.currentTarget.classList.add('loaded');
@@ -14,16 +15,7 @@ export default function SectionPage({ settings: s, section, parent, groups, link
 
   return (
     <>
-      <nav className="nav pad" aria-label="Main">
-        <a className="brand" href="/"><img src="/logo.webp" alt="" width="40" height="40" />KELVIN<span>MENSAH</span></a>
-        <ul>
-          <li><a href="/#work">Work</a></li>
-          <li><a href="/#about">About</a></li>
-          <li><a href="/#youtube">YouTube</a></li>
-          <li><a href="/#contact">Contact</a></li>
-        </ul>
-        <a className="hire" href={s.fiverrUrl || '/#contact'} {...(s.fiverrUrl ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>Hire me</a>
-      </nav>
+      <SiteNav settings={s} />
 
       <main className="pad section-page">
         <div className="wrap">
