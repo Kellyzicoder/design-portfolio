@@ -8,7 +8,7 @@ import { useSectionOptions } from '../components/SectionInput';
 import { nameFromFile } from '../../lib/fileName';
 
 const QUERY = `*[_type == "poster" && defined(image.asset) && !(_id in path("drafts.**"))] | order(coalesce(order, 999) asc, _createdAt desc){
-  _id, title, section, onWall,
+  _id, title, section, onWall, featured,
   "file": image.asset->originalFilename,
   "url": image.asset->url,
   "lqip": image.asset->metadata.lqip
@@ -55,6 +55,24 @@ export default function PosterGrid() {
     setMoving(false);
   }
 
+  // tick or untick a yes/no field (onWall, featured) on the selected posters
+  async function setFlag(field, on, label) {
+    if (!picked.size) return;
+    setMoving(true);
+    try {
+      const ids = [...picked];
+      const drafts = await client.fetch('*[_id in $ids]._id', { ids: ids.map((id) => `drafts.${id}`) });
+      const tx = client.transaction();
+      [...ids, ...drafts].forEach((id) => tx.patch(id, (p) => p.set({ [field]: on })));
+      await tx.commit();
+      toast.push({ status: 'success', title: `${on ? 'Added' : 'Removed'} ${ids.length} poster${ids.length > 1 ? 's' : ''} ${on ? 'to' : 'from'} ${label}` });
+      stopSelecting();
+    } catch (e) {
+      toast.push({ status: 'error', title: 'Could not update', description: e && e.message });
+    }
+    setMoving(false);
+  }
+
   // tick or untick "Show in the opening wall" on the selected posters
   async function setWall(on) {
     if (!picked.size) return;
@@ -89,7 +107,7 @@ export default function PosterGrid() {
     if (!posters) return [];
     const q = search.trim().toLowerCase();
     return posters.filter((p) =>
-      (section === 'all' || (section === 'wall' ? p.onWall : section === 'none' ? !sections.some((o) => o.value === p.section) : p.section === section)) &&
+      (section === 'all' || (section === 'wall' ? p.onWall : section === 'featured' ? p.featured : section === 'none' ? !sections.some((o) => o.value === p.section) : p.section === section)) &&
       (!q || name(p).toLowerCase().includes(q))
     );
   }, [posters, section, search, sections]);
@@ -109,6 +127,7 @@ export default function PosterGrid() {
             <Box style={{ minWidth: 220 }}>
               <Select value={section} onChange={(e) => setSection(e.currentTarget.value)}>
                 <option value="all">All sections</option>
+                <option value="featured">Featured in Work ({(posters || []).filter((p) => p.featured).length})</option>
                 <option value="wall">On the opening wall ({(posters || []).filter((p) => p.onWall).length})</option>
                 {sections.map((o) => <option key={o.value} value={o.value}>{o.title} ({countIn(o.value)})</option>)}
                 <option value="none">No section / removed section</option>
@@ -139,6 +158,8 @@ export default function PosterGrid() {
               <Button mode="bleed" text="Clear" disabled={!picked.size} onClick={() => setPicked(new Set())} />
               <Button mode="ghost" tone="positive" text="Add to wall" disabled={!picked.size || moving} onClick={() => setWall(true)} />
               <Button mode="ghost" text="Remove from wall" disabled={!picked.size || moving} onClick={() => setWall(false)} />
+              <Button mode="ghost" tone="positive" text="Add to featured" disabled={!picked.size || moving} onClick={() => setFlag('featured', true, 'Featured')} />
+              <Button mode="ghost" text="Remove from featured" disabled={!picked.size || moving} onClick={() => setFlag('featured', false, 'Featured')} />
               <Box flex={1} />
               <Text size={1}>Move to</Text>
               <Box style={{ minWidth: 220 }}>
@@ -174,10 +195,11 @@ export default function PosterGrid() {
               style={{ textDecoration: 'none', color: 'inherit', position: 'relative', padding: 0, width: '100%', display: 'block', font: 'inherit', textAlign: 'left', cursor: 'pointer',
                 boxShadow: on ? '0 0 0 3px var(--card-focus-ring-color)' : undefined }}
             >
-              {p.onWall && (
-                <Box style={{ position: 'absolute', top: 8, right: 8, zIndex: 1, background: 'rgba(47,47,228,.9)', color: '#fff', borderRadius: 999, padding: '3px 8px', fontSize: 11, fontWeight: 600 }}>
-                  On wall
-                </Box>
+              {(p.onWall || p.featured) && (
+                <Flex gap={1} direction="column" align="flex-end" style={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}>
+                  {p.featured && <Box style={{ background: 'rgba(224,36,47,.92)', color: '#fff', borderRadius: 999, padding: '3px 8px', fontSize: 11, fontWeight: 600 }}>Featured</Box>}
+                  {p.onWall && <Box style={{ background: 'rgba(47,47,228,.9)', color: '#fff', borderRadius: 999, padding: '3px 8px', fontSize: 11, fontWeight: 600 }}>On wall</Box>}
+                </Flex>
               )}
               {selecting && (
                 <Box style={{ position: 'absolute', top: 8, left: 8, zIndex: 1, background: 'rgba(0,0,0,.55)', borderRadius: 4, padding: 4, lineHeight: 0 }}>

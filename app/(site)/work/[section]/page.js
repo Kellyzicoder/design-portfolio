@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import SectionPage from '@/components/SectionPage';
 import { getSiteData } from '@/lib/getSiteData';
+import { spread } from '@/lib/spread';
 
 export const revalidate = 60;
 
@@ -28,7 +29,7 @@ export default async function WorkSection({ params }) {
   const groups = (section.subs || [section]).map((g) => ({
     id: g.id,
     title: g.title,
-    posters: posters.filter((p) => p.section === g.id),
+    posters: spread(posters.filter((p) => p.section === g.id)),
   }));
 
   // all the sections you can jump to from here
