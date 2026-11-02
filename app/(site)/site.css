@@ -348,6 +348,6 @@ footer a{color:inherit}
 .case-card-text{display:flex;flex-direction:column;justify-content:center;gap:14px;padding:clamp(24px,4vw,48px)}
 .case-card-text small{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
 .case-card-text b{font-weight:400;font-size:clamp(24px,2.8vw,38px);line-height:1.05;letter-spacing:-.03em}
-.case-card-text span{color:var(--soft)}
+.case-card-text>span{color:var(--soft)}
 .case-card-text em{font-style:normal;color:var(--blue);font-weight:500}
 @media (max-width:860px){.case-card{grid-template-columns:1fr}}
