@@ -96,7 +96,7 @@ export function startWall({ canvas, hero, opener, posters, start }) {
       const len = x;
       const shift = r === mid ? -tiles[0].x0 : -len / 2 + ((r * 97) % 200);
       tiles.forEach((t) => { t.x0 += shift; });
-      rows.push({ tiles, len, dir: r % 2 ? 1 : -1, speed: 10 + (r % 3) * 6, drift: 0, y: g.position.y });
+      rows.push({ tiles, len, dir: r % 2 ? 1 : -1, speed: 18 + (r % 3) * 10, drift: 0, y: g.position.y });
     }
   }
   build();
