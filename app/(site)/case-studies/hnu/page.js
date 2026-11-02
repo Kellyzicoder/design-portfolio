@@ -4,7 +4,7 @@ import { getSiteData } from '@/lib/getSiteData';
 export const revalidate = 60;
 export const metadata = {
   title: 'Human Nutrition Unit redesign · Case study · Kelvin Mensah',
-  description: 'UX/UI case study: redesigning the University of Auckland Human Nutrition Unit website for study participants, partners and students.',
+  description: 'UX/UI case study: redesigning the University of Auckland Human Nutrition Unit website, from Figma prototype to coded pages.',
 };
 
 const IMG = '/case-studies/hnu';
@@ -29,14 +29,14 @@ export default async function HnuCaseStudy() {
           <p className="eyebrow">Case study · UX/UI design</p>
           <h1>Redesigning the Human Nutrition Unit website</h1>
           <p className="lead">
-            A University of Auckland capstone project for a real client. I was the lead designer on the redesign,
-            working in Figma alongside a second designer, then helped build it in Next.js.
+            A one-semester University of Auckland capstone for a real client. I owned the high-fidelity Figma design,
+            redesigned the key pages, presented them to the client, and then coded pages myself in Next.js.
           </p>
 
           <dl className="cs-facts">
             <div><dt>Client</dt><dd>Human Nutrition Unit, University of Auckland</dd></div>
-            <div><dt>My role</dt><dd>Lead designer (UX/UI), client meetings, front-end development</dd></div>
-            <div><dt>Team</dt><dd>6 people, one semester</dd></div>
+            <div><dt>My role</dt><dd>Design lead (Figma), front-end developer</dd></div>
+            <div><dt>Team</dt><dd>6 people, one semester (2026)</dd></div>
             <div><dt>Tools</dt><dd>Figma, Next.js, TypeScript, Payload CMS</dd></div>
           </dl>
           <p className="cs-links">
@@ -46,12 +46,12 @@ export default async function HnuCaseStudy() {
 
         <section className="wrap cs-section">
           <p className="eyebrow">01 · The problem</p>
-          <h2>A useful research unit, hidden behind a hard-to-use website</h2>
+          <h2>A busy research unit with a website that was hard to use</h2>
           <div className="cs-text">
             <p>
               The Human Nutrition Unit runs nutrition studies and works with universities, health groups and food companies.
-              Its website had to serve very different people: people thinking about joining a study, partner universities
-              and companies, future postgraduate students, and international students looking for internships.
+              Its website has to serve very different people: people thinking about joining a study, research partners,
+              donors, future postgraduate students and international interns.
             </p>
             <p>The old site made all of them work hard:</p>
             <ul>
@@ -68,53 +68,56 @@ export default async function HnuCaseStudy() {
         </section>
 
         <section className="wrap cs-section">
-          <p className="eyebrow">02 · Process</p>
-          <h2>Listen, design, check, build</h2>
+          <p className="eyebrow">02 · My role and process</p>
+          <h2>From a cancelled project to a client-approved design</h2>
+          <div className="cs-text">
+            <p>
+              Our first project was cancelled in week 2, and we were moved to the Human Nutrition Unit. After the first client
+              meeting, the team gave me ownership of the high-fidelity Figma design.
+            </p>
+          </div>
           <ol className="cs-steps">
-            <li><strong>Listen.</strong> I led meetings with the client to understand their goals and who the site is for.</li>
-            <li><strong>Design.</strong> I designed the full site in Figma for desktop and mobile, working alongside a second designer.</li>
-            <li><strong>Check.</strong> Before handing off, I took the designs to our team lead and developers, so the designs were practical to build.</li>
-            <li><strong>Build.</strong> I then helped build it: the Research page (search, filters, pagination, grid and list views) and the Collaborations page, connected to a CMS so the client can update content without code.</li>
+            <li><strong>Prototype.</strong> I built the first interactive Figma prototype: home page, navigation, reusable components, and mobile versions of each layout.</li>
+            <li><strong>Critique.</strong> In week 8 a teammate said our home page lacked hierarchy and clarity. The team agreed, and I rebuilt it from scratch with a cleaner, research-focused layout.</li>
+            <li><strong>Client review.</strong> I redesigned the Collaborations page, presented it at our weekly client meeting, and reworked the content flow based on their feedback.</li>
+            <li><strong>Build.</strong> Teammates coded from my designs while I answered layout questions. I coded the Research page (filters, pagination, grid and list views) and the Collaborations page.</li>
           </ol>
         </section>
 
         <section className="wrap cs-section">
-          <p className="eyebrow">03 · The redesign</p>
-          <h2>Studies people can scan in seconds</h2>
+          <p className="eyebrow">03 · The pages I designed</p>
+          <h2>Collaborations: partners and impact at a glance</h2>
           <div className="cs-text">
             <p>
-              The studies page became a list of cards. Each one shows if the study is open, its reference number, a one-line summary,
-              how long it runs and who can join, with one clear “View details” button.
+              The old site had no clear way to show who the unit works with. I designed a page that leads with partner logos,
+              then four collaboration areas (academic, clinical, government and industry), and ends with the unit’s impact.
+              After presenting it to the client, I changed the content flow so it matched how the unit really works with partners.
             </p>
           </div>
-          <Shot src="new-studies" alt="Redesigned studies list with study cards" w={1280} h={1875} caption="Our Studies: one card per study" />
+          <Shot src="new-collab" alt="Redesigned Collaborations page" w={1280} h={3004} caption="Collaborations page: designed, presented to the client, then coded by me" tall />
 
-          <h2 className="cs-sub">One study template, with the answer first</h2>
+          <h2 className="cs-sub">Home: rebuilt after an honest critique</h2>
           <div className="cs-text">
             <p>
-              I designed a single study template that works for every study, so the client can add new ones through the CMS.
-              Key facts sit at the top (duration, compensation, location), and a “Check if you’re eligible” box stays next to the
-              content. Clear “You can join if” and “You cannot join if” lists replace paragraphs of rules.
+              My second home page gives each visitor a clear path: a strong headline with “Read more” and “Participate in a study”
+              buttons, a short “Who we are”, what the unit does, key numbers, and a donation call to action. I also designed the
+              Donation page, following University of Auckland branding with the main call to action above the fold.
             </p>
           </div>
-          <Shot src="new-study" alt="Study template: key facts, eligibility box and who can join" w={1285} h={3028} caption="Study template (NZ Synergy Study)" tall />
+          <div className="cs-grid phones">
+            <Shot src="mobile-home" alt="Mobile home page design" w={354} h={3937} caption="Home (mobile)" tall />
+          </div>
 
-          <h2 className="cs-sub">Partners and contact</h2>
+          <h2 className="cs-sub">Team pages in the same system</h2>
           <div className="cs-text">
             <p>
-              The Collaborations page shows partners, the main collaboration areas and the unit’s impact at a glance.
-              The contact page became a simple form with a subject menu, with phone and address beside it.
+              My teammate Ayush Kumar designed the Studies pages and the main Contact layout. I reviewed the Contact page and adjusted
+              spacing and layout so every page matched the same design system.
             </p>
           </div>
           <div className="cs-grid two">
-            <Shot src="new-collab" alt="Redesigned Collaborations page" w={1280} h={3004} caption="Collaborations" tall />
-            <Shot src="new-contact" alt="Redesigned contact page with simple form" w={1280} h={1740} caption="Contact" />
-          </div>
-
-          <h2 className="cs-sub">Designed for mobile too</h2>
-          <div className="cs-grid phones">
-            <Shot src="mobile-home" alt="Mobile home page design" w={354} h={3937} caption="Home (mobile)" tall />
-            <Shot src="mobile-contact" alt="Mobile contact page design" w={354} h={1715} caption="Contact (mobile)" />
+            <Shot src="new-studies" alt="Studies list with study cards" w={1280} h={1875} caption="Our Studies (designed by Ayush Kumar)" />
+            <Shot src="new-contact" alt="Contact page with simple form" w={1280} h={1740} caption="Contact (layout by Ayush, refined by me)" />
           </div>
         </section>
 
@@ -123,12 +126,16 @@ export default async function HnuCaseStudy() {
           <h2>What I’d take into my next project</h2>
           <div className="cs-text">
             <ul>
-              <li><strong>Design for each visitor’s first question.</strong> A study participant wants to know “can I join?”, a partner wants to know “what do you work on?”. Putting that answer first did more than any visual polish.</li>
-              <li><strong>Show developers early.</strong> Checking designs with the developers before handoff caught things that would have been hard to build, and saved rework later.</li>
-              <li><strong>Design templates, not one-off pages.</strong> Because the client updates content through a CMS, each page had to work with any study or partner, not just the example in Figma.</li>
-              <li><strong>Knowing the code helps the design.</strong> Building pages myself showed me what makes a Figma file easy to build from: tidy layers, clear spacing and real content.</li>
+              <li><strong>Critique makes the work better.</strong> It stung to hear our home page wasn’t good enough after hours of work. Rebuilding it gave us a much stronger design system for every other page.</li>
+              <li><strong>Iteration with the client is the job.</strong> The client’s feedback on the Collaborations page meant more changes in a busy week, but the final page fits how the unit really works.</li>
+              <li><strong>Designs are instructions for developers.</strong> Once teammates coded from my Figma files, I saw how much clear, consistent components and spacing matter when several people build from the same source.</li>
+              <li><strong>Knowing the code helps the design.</strong> Coding the Research and Collaborations pages myself, and fixing merge conflicts along the way, taught me what makes a design easy to build.</li>
+              <li><strong>Accessibility is not optional.</strong> A public research site serves everyone, so strong colour contrast, clear hierarchy and simple navigation are a responsibility, not a style choice.</li>
             </ul>
-            <p className="cs-next"><strong>What I’d do differently:</strong> test the designs with real study participants earlier, and check colour contrast and accessibility (WCAG) from the first draft rather than at the end.</p>
+            <p className="cs-next">
+              <strong>What I’d do differently:</strong> share rough wireframes and a few layout options with the team and the client
+              much earlier, before polishing anything in high fidelity. Both our big redesigns would have been small changes at the wireframe stage.
+            </p>
           </div>
         </section>
 
