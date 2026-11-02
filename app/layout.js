@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Kelvin Mensah',
-  description: 'Kelvin Mensah (Kelv Studio), Auckland graphic designer: logos, brand identities, event flyers, banners and social media design.',
+  description: 'Kelvin Mensah (Kelv Studio), Auckland UI/UX and graphic designer: websites and apps, brand identities, logos, event flyers and social media design.',
 };
 
 export default function RootLayout({ children }) {

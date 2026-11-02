@@ -25,7 +25,7 @@ export default async function HnuCaseStudy() {
       <SiteNav settings={settings} />
       <main className="pad case">
         <div className="wrap">
-          <a className="back" href="/">← Back</a>
+          <a className="back" href="/ui-ux">← All case studies</a>
           <p className="eyebrow">Case study · UX/UI design</p>
           <h1>Redesigning the Human Nutrition Unit website</h1>
           <p className="lead">
@@ -158,7 +158,7 @@ export default async function HnuCaseStudy() {
 
         <div className="wrap cs-end">
           <a className="cta" href="https://hnu-uoa-beta.vercel.app" target="_blank" rel="noopener noreferrer">View the live build ↗</a>
-          <a className="back" href="/">← Back to all work</a>
+          <a className="back" href="/ui-ux">← All case studies</a>
         </div>
       </main>
     </>
