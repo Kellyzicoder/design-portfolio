@@ -157,6 +157,26 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
           </div>
         </section>
 
+        <section className="block pad" id="uiux" style={{ paddingTop: 0 }}>
+          <div className="wrap">
+            <div className="work-head">
+              <h2>UI/UX design</h2>
+              <p className="eyebrow" style={{ margin: 0 }}>Websites and apps, from Figma to code</p>
+            </div>
+            <a className="case-card" href="/case-studies/hnu">
+              <span className="case-card-img">
+                <img src="/case-studies/hnu/cover.webp" alt="Human Nutrition Unit website redesign: desktop and mobile designs" width="1600" height="1000" loading="lazy" decoding="async" />
+              </span>
+              <span className="case-card-text">
+                <small>Case study · University of Auckland client</small>
+                <b>Redesigning the Human Nutrition Unit website</b>
+                <span>Design lead on a 6-person team: Figma prototype, client reviews, redesigned pages for desktop and mobile, then coded in Next.js.</span>
+                <em>Read the case study <span aria-hidden="true">→</span></em>
+              </span>
+            </a>
+          </div>
+        </section>
+
         {testimonials.length > 0 && (
           <section className="block pad" id="kind-words" style={{ paddingTop: 0 }}>
             <div className="wrap">

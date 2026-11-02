@@ -338,3 +338,16 @@ footer a{color:inherit}
   .cs-facts,.cs-steps{grid-template-columns:1fr}
   .cs-grid.phones{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+
+/* UI/UX section on the home page */
+.case-card{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);background:var(--paper);border:1px solid var(--line);color:var(--ink);text-decoration:none;overflow:hidden;transition:box-shadow .3s,transform .3s}
+.case-card:hover{box-shadow:0 18px 44px rgba(15,20,40,.12);transform:translateY(-2px)}
+.case-card-img{display:block;overflow:hidden;background:#e8eaf6}
+.case-card-img img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.case-card:hover .case-card-img img{transform:scale(1.03)}
+.case-card-text{display:flex;flex-direction:column;justify-content:center;gap:14px;padding:clamp(24px,4vw,48px)}
+.case-card-text small{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.case-card-text b{font-weight:400;font-size:clamp(24px,2.8vw,38px);line-height:1.05;letter-spacing:-.03em}
+.case-card-text span{color:var(--soft)}
+.case-card-text em{font-style:normal;color:var(--blue);font-weight:500}
+@media (max-width:860px){.case-card{grid-template-columns:1fr}}
