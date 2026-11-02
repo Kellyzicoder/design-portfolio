@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { SECTIONS as DEFAULT_SECTIONS } from '@/lib/sections';
 import { startWall } from './wall';
-import Viewer from './Viewer';
 import SiteNav from './SiteNav';
 import { spread, mixSections } from '@/lib/spread';
 
@@ -13,7 +12,6 @@ export const sized = (url, w) => (url && url.includes('cdn.sanity.io') ? `${url}
 const small = (p) => p.thumb || sized(p.url, 520);
 // a blurred preview behind an image, so nothing is ever blank while it loads
 const blur = (p) => (p.lqip ? { backgroundImage: `url(${p.lqip})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined);
-const onImgLoad = (e) => e.currentTarget.classList.add('loaded');
 
 function youtubeId(url) {
   if (!url) return null;
@@ -36,44 +34,12 @@ function LinkOrText({ href, children }) {
 
 export default function Portfolio({ settings: s, posters, start, testimonials = [], sections, videos = [] }) {
   const SECTIONS = sections && sections.length ? sections : DEFAULT_SECTIONS;
-  /* ---------- Work section ---------- */
-  const bySection = useMemo(() => {
-    const m = {};
-    posters.forEach((p) => { (m[p.section] = m[p.section] || []).push(p); });
-    return m;
-  }, [posters]);
-  const count = (sec) => (sec.id === 'featured' ? featuredList.length : sec.subs ? sec.subs.reduce((a, x) => a + (bySection[x.id] || []).length, 0) : (bySection[sec.id] || []).length);
-
-  // section id -> name shown on each design ("Logos", "Easter"...)
-  const sectionName = useMemo(() => {
-    const m = {};
-    SECTIONS.forEach((s) => { m[s.id] = s.title; (s.subs || []).forEach((x) => { m[x.id] = x.title; }); });
-    return m;
-  }, [SECTIONS]);
-
-  // "Featured" opens first: the designs ticked as featured, or else a mix of every section
-  const featuredList = useMemo(() => {
+  /* ---------- Selected work: a few designs for the Designs card ---------- */
+  const preview = useMemo(() => {
     const picked = posters.filter((p) => p.featured);
-    if (picked.length) return spread(picked);
-    const order = SECTIONS.flatMap((s) => (s.subs ? s.subs.map((x) => x.id) : [s.id]));
-    return spread(mixSections(posters, order));
+    const order = SECTIONS.flatMap((x) => (x.subs ? x.subs.map((y) => y.id) : [x.id]));
+    return (picked.length ? spread(picked) : spread(mixSections(posters, order))).filter((p) => (p.aspect || 0.75) < 1).slice(0, 3);
   }, [posters, SECTIONS]);
-  const FEATURED = { id: 'featured', title: 'Featured' };
-  const TABS = [FEATURED, ...SECTIONS];
-
-  const [cat, setCat] = useState(FEATURED);
-  const [sub, setSub] = useState(null);
-  const pick = (sec) => { setCat(sec); setSub(sec.subs ? sec.subs[0] : null); };
-  const active = sub || cat;
-  const isFeatured = active.id === 'featured';
-  const list = useMemo(() => (isFeatured ? featuredList : spread(bySection[active.id] || [])), [isFeatured, featuredList, bySection, active.id]);
-
-  /* ---------- poster viewer ---------- */
-  const [vi, setVi] = useState(-1);
-  const open = vi >= 0 && vi < list.length;
-  const LIMIT = isFeatured ? 18 : 16; // posters shown per tab before "Show all"
-  const shownList = list.slice(0, LIMIT);
-  useEffect(() => setVi(-1), [cat, sub]);
 
   /* ---------- 3D wall ---------- */
   const heroRef = useRef(null), canvasRef = useRef(null), openerRef = useRef(null);
@@ -124,36 +90,29 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
         <section className="block pad" id="work" style={{ paddingTop: 0 }}>
           <div className="wrap">
             <div className="work-head">
-              <h2>Work</h2>
-              <div className="cats" role="group" aria-label="Sections">
-                {TABS.map((sec) => (
-                  <button key={sec.id} aria-pressed={cat.id === sec.id} onClick={() => pick(sec)}>
-                    {sec.title}{sec.id !== 'featured' && <span className="n">{count(sec)}</span>}
-                  </button>
-                ))}
-              </div>
+              <h2>Selected work</h2>
+              <p className="eyebrow" style={{ margin: 0 }}>Two sides of how I design</p>
             </div>
-            {cat.subs && (
-              <div className="subcats" role="group" aria-label={`${cat.title} types`}>
-                {cat.subs.map((x) => (
-                  <button key={x.id} aria-pressed={sub && sub.id === x.id} onClick={() => setSub(x)}>{x.title}</button>
-                ))}
-              </div>
-            )}
-            <div className={`masonry${isFeatured ? ' big' : ''}`} key={active.id}>
-              {list.length === 0 && <div className="empty">No {active.title} designs added yet</div>}
-              {shownList.map((p, i) => (
-                <button key={p.id} onClick={() => setVi(i)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75), '--i': i }}>
-                  <img src={sized(p.url, isFeatured ? 600 : 400)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" decoding="async" onLoad={onImgLoad} ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }} />
-                  <span className="cap"><b>{p.title}</b><small>{sectionName[p.section] || ''}</small></span>
-                </button>
-              ))}
+            <div className="pick-grid">
+              <a className="pick" href="/ui-ux">
+                <span className="pick-img uiux"><img src="/case-studies/hnu/cover.webp" alt="" width="1600" height="1000" loading="lazy" decoding="async" /></span>
+                <span className="pick-text">
+                  <small>UI/UX design</small>
+                  <b>Websites and apps, from Figma to code</b>
+                  <em>View case studies <span aria-hidden="true">→</span></em>
+                </span>
+              </a>
+              <a className="pick" href="/designs">
+                <span className="pick-img posters">
+                  {preview.map((p) => <img key={p.id} src={sized(p.url, 500)} alt="" loading="lazy" decoding="async" style={blur(p)} />)}
+                </span>
+                <span className="pick-text">
+                  <small>Graphic design</small>
+                  <b>Brands, flyers and social content</b>
+                  <em>View all designs <span aria-hidden="true">→</span></em>
+                </span>
+              </a>
             </div>
-            {!isFeatured && list.length > LIMIT && (
-              <div className="show-more">
-                <a href={`/work/${active.id}`}>Show all {list.length} {active.title} <span aria-hidden="true">→</span></a>
-              </div>
-            )}
           </div>
         </section>
 
@@ -258,10 +217,9 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
       </main>
       <footer className="pad">
         <span>© {new Date().getFullYear()} Kelvin Mensah</span>
-        <span>{s.youtubeUrl ? <a href={s.youtubeUrl} target="_blank" rel="noopener noreferrer">YouTube</a> : 'Graphic design portfolio'}</span>
+        <span>{s.youtubeUrl ? <a href={s.youtubeUrl} target="_blank" rel="noopener noreferrer">YouTube</a> : 'UI/UX and graphic design portfolio'}</span>
       </footer>
 
-      {open && <Viewer list={list} index={vi} label={active.title} onClose={() => setVi(-1)} onIndex={setVi} />}
     </>
   );
 }
