@@ -68,6 +68,18 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
   const isFeatured = active.id === 'featured';
   const list = useMemo(() => (isFeatured ? featuredList : spread(bySection[active.id] || [])), [isFeatured, featuredList, bySection, active.id]);
 
+  /* ---------- Designs | UI/UX tabs (the nav's UI/UX link opens the UI/UX tab) ---------- */
+  const [kind, setKind] = useState('designs');
+  useEffect(() => {
+    const sync = () => {
+      if (window.location.hash === '#uiux') setKind('uiux');
+      else if (window.location.hash === '#work') setKind('designs');
+    };
+    sync();
+    window.addEventListener('hashchange', sync);
+    return () => window.removeEventListener('hashchange', sync);
+  }, []);
+
   /* ---------- poster viewer ---------- */
   const [vi, setVi] = useState(-1);
   const open = vi >= 0 && vi < list.length;
@@ -123,8 +135,29 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
 
         <section className="block pad" id="work" style={{ paddingTop: 0 }}>
           <div className="wrap">
+            <span id="uiux" className="anchor" aria-hidden="true" />
+            <div className="kind-tabs" role="tablist" aria-label="Type of work">
+              <button role="tab" aria-selected={kind === 'designs'} onClick={() => setKind('designs')}>Designs</button>
+              <button role="tab" aria-selected={kind === 'uiux'} onClick={() => setKind('uiux')}>UI/UX</button>
+            </div>
+            {kind === 'uiux' ? (
+              <div className="uiux-panel">
+                <p className="eyebrow">Websites and apps, from Figma to code</p>
+                <a className="case-card" href="/case-studies/hnu">
+                  <span className="case-card-img">
+                    <img src="/case-studies/hnu/cover.webp" alt="Human Nutrition Unit website redesign: desktop and mobile designs" width="1600" height="1000" loading="lazy" decoding="async" />
+                  </span>
+                  <span className="case-card-text">
+                    <small>Case study · University of Auckland client</small>
+                    <b>Redesigning the Human Nutrition Unit website</b>
+                    <span>Design lead on a 6-person team: Figma prototype, client reviews, redesigned pages for desktop and mobile, then coded in Next.js.</span>
+                    <em>Read the case study <span aria-hidden="true">→</span></em>
+                  </span>
+                </a>
+              </div>
+            ) : (
+            <>
             <div className="work-head">
-              <h2>Work</h2>
               <div className="cats" role="group" aria-label="Sections">
                 {TABS.map((sec) => (
                   <button key={sec.id} aria-pressed={cat.id === sec.id} onClick={() => pick(sec)}>
@@ -154,26 +187,8 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
                 <a href={`/work/${active.id}`}>Show all {list.length} {active.title} <span aria-hidden="true">→</span></a>
               </div>
             )}
-          </div>
-        </section>
-
-        <section className="block pad" id="uiux" style={{ paddingTop: 0 }}>
-          <div className="wrap">
-            <div className="work-head">
-              <h2>UI/UX design</h2>
-              <p className="eyebrow" style={{ margin: 0 }}>Websites and apps, from Figma to code</p>
-            </div>
-            <a className="case-card" href="/case-studies/hnu">
-              <span className="case-card-img">
-                <img src="/case-studies/hnu/cover.webp" alt="Human Nutrition Unit website redesign: desktop and mobile designs" width="1600" height="1000" loading="lazy" decoding="async" />
-              </span>
-              <span className="case-card-text">
-                <small>Case study · University of Auckland client</small>
-                <b>Redesigning the Human Nutrition Unit website</b>
-                <span>Design lead on a 6-person team: Figma prototype, client reviews, redesigned pages for desktop and mobile, then coded in Next.js.</span>
-                <em>Read the case study <span aria-hidden="true">→</span></em>
-              </span>
-            </a>
+            </>
+            )}
           </div>
         </section>
 

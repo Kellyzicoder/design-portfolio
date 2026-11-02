@@ -351,3 +351,12 @@ footer a{color:inherit}
 .case-card-text>span{color:var(--soft)}
 .case-card-text em{font-style:normal;color:var(--blue);font-weight:500}
 @media (max-width:860px){.case-card{grid-template-columns:1fr}}
+
+/* Designs | UI/UX tabs at the top of the work section */
+.anchor{display:block;position:relative;top:-96px;visibility:hidden}
+.kind-tabs{display:flex;align-items:flex-end;gap:clamp(18px,3vw,40px);margin-bottom:28px;border-bottom:1px solid var(--line)}
+.kind-tabs button{position:relative;padding:0 0 14px;font-weight:400;letter-spacing:-.045em;line-height:.9;font-size:clamp(40px,6.4vw,92px);color:rgba(11,12,15,.28);transition:color .2s}
+.kind-tabs button:hover{color:rgba(11,12,15,.55)}
+.kind-tabs button[aria-selected="true"]{color:var(--ink)}
+.kind-tabs button[aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:var(--blue)}
+.uiux-panel .eyebrow{margin-bottom:20px}
