@@ -379,3 +379,6 @@ footer a{color:inherit}
   .nav-menu-cta{display:block;margin-top:8px;padding:14px 16px;border-radius:999px;text-align:center;color:#fff;text-decoration:none;font-size:17px;font-weight:500;
     background:radial-gradient(120% 140% at 0% 0%,#5a5d66 0%,#16171b 42%,#0b0c0f 70%,#3a3c43 100%)}
 }
+.cs-grid.build{grid-template-columns:minmax(0,1fr) minmax(0,260px);margin-top:clamp(12px,1.6vw,22px)}
+.cs-grid.build .cs-shot:last-child img{max-height:560px;object-fit:cover;object-position:top}
+@media (max-width:860px){.cs-grid.build{grid-template-columns:minmax(0,1fr) minmax(0,40%)}}

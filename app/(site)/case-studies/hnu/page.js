@@ -122,7 +122,24 @@ export default async function HnuCaseStudy() {
         </section>
 
         <section className="wrap cs-section">
-          <p className="eyebrow">04 · What I learned</p>
+          <p className="eyebrow">04 · The live build</p>
+          <h2>From Figma to a working website</h2>
+          <div className="cs-text">
+            <p>
+              The team built the site in Next.js and TypeScript. I coded the Research page myself: search by title or DOI,
+              sorting, filters by category and staff member, pagination, and grid and list views. On phones the filters fold
+              into one “Filters” button so the results stay easy to reach.
+            </p>
+          </div>
+          <Shot src="live-home" alt="Live HNU home page on desktop" w={1600} h={1003} caption="Home page, live site" />
+          <div className="cs-grid build">
+            <Shot src="live-research" alt="Live Research page on desktop with search, sort and category filters" w={1600} h={1004} caption="Research page (coded by me), desktop" />
+            <Shot src="live-research-mobile" alt="Live Research page on a phone" w={600} h={1342} caption="Research page, mobile" />
+          </div>
+        </section>
+
+        <section className="wrap cs-section">
+          <p className="eyebrow">05 · What I learned</p>
           <h2>What I’d take into my next project</h2>
           <div className="cs-text">
             <ul>

@@ -145,7 +145,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
                 <p className="eyebrow">Websites and apps, from Figma to code</p>
                 <a className="case-card" href="/case-studies/hnu">
                   <span className="case-card-img">
-                    <img src="/case-studies/hnu/cover.webp" alt="Human Nutrition Unit website redesign: desktop and mobile designs" width="1600" height="1000" loading="lazy" decoding="async" />
+                    <img src="/case-studies/hnu/cover.webp" alt="Human Nutrition Unit live website: home page on desktop and Research page on a phone" width="1600" height="1000" loading="lazy" decoding="async" />
                   </span>
                   <span className="case-card-text">
                     <small>Case study · University of Auckland client</small>
