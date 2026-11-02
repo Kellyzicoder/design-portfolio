@@ -151,7 +151,7 @@ export default function RequestForm({ types }) {
 
       {state === 'error' && <p className="form-error" role="alert">{error}</p>}
       <button className="btn" type="submit" disabled={state === 'sending'}>{state === 'sending' ? 'Sending…' : 'Send request'}</button>
-      <p className="form-note">I’ll reply by email. Nothing is charged until you agree to a price.</p>
+      <p className="form-note">Send your brief and you’ll get a clear quote by email within 24 hours. No cost to ask.</p>
     </form>
   );
 }
