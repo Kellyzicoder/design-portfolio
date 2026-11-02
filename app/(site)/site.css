@@ -405,3 +405,6 @@ footer a{color:inherit}
 .pick-text b{font-weight:400;font-size:clamp(22px,2.4vw,32px);line-height:1.08;letter-spacing:-.03em}
 .pick-text em{font-style:normal;color:var(--blue);font-weight:500;margin-top:6px}
 @media (max-width:760px){.pick-grid{grid-template-columns:1fr}}
+/* four phone screenshots in a row (FCC case study) */
+.cs-grid.phones4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:760px){.cs-grid.phones4{grid-template-columns:repeat(2,minmax(0,1fr))}}

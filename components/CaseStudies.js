@@ -8,6 +8,14 @@ export const CASE_STUDIES = [
     title: 'Redesigning the Human Nutrition Unit website',
     text: 'Design lead on a 6-person team: Figma prototype, client reviews, redesigned pages for desktop and mobile, then coded in Next.js.',
   },
+  {
+    href: '/case-studies/fcc-attendance',
+    image: '/case-studies/fcc/cover.webp',
+    alt: 'Church attendance app: dashboard on desktop and check-in on a phone',
+    label: 'Case study · Favourite Child Church',
+    title: 'A church attendance app people use every Sunday',
+    text: 'Solo design and build: phone-first check-in, follow-up and dashboards, improved every week from ushers’ and leaders’ feedback.',
+  },
 ];
 
 export default function CaseStudies() {
