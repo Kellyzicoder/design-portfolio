@@ -23,15 +23,30 @@ export function startWall({ canvas, hero, opener, posters, start }) {
   const textures = [];
   const imgLoader = new THREE.ImageLoader(); imgLoader.setCrossOrigin('anonymous');
   // show the tiny blurred preview straight away, then swap in the real image when it arrives
-  const load = (p) => {
+  let stopped = false;
+  const queue = []; let active = 0, queueOpen = false;
+  const pump = () => {
+    // wall designs load a few at a time, so the phone isn't fetching 50 images at once
+    while (queueOpen && !stopped && active < 6 && queue.length) {
+      const job = queue.shift(); active++;
+      const done = () => { active--; pump(); };
+      imgLoader.load(job.url, (img) => { job.ok(img); done(); }, undefined, done);
+    }
+  };
+  const openQueue = () => { if (!queueOpen) { queueOpen = true; pump(); } };
+  const load = (p, later) => {
     const t = new THREE.Texture(); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = maxAniso; textures.push(t);
-    const set = (img) => { if (t.userData.ready) t.dispose(); /* new size: let WebGL re-make it */ t.image = img; t.needsUpdate = true; t.userData.ready = true; };
+    const set = (img) => { if (stopped) return; if (t.userData.ready) t.dispose(); /* new size: let WebGL re-make it */ t.image = img; t.needsUpdate = true; t.userData.ready = true; };
     if (p.lqip) imgLoader.load(p.lqip, (img) => { if (!t.userData.full) set(img); });
-    imgLoader.load(p.url, (img) => { t.userData.full = true; set(img); });
+    const ok = (img) => { t.userData.full = true; set(img); };
+    if (later) { queue.push({ url: p.url, ok }); pump(); }
+    else imgLoader.load(p.url, (img) => { ok(img); openQueue(); }, undefined, openQueue);
     return t;
   };
-  const pool = (posters.length ? posters : [start]).map((p) => ({ tex: load(p), aspect: p.aspect || 0.75 }));
+  // the first big design loads first; the wall designs wait until it's in (or 2.5s at most)
   const startTex = load(start);
+  const pool = (posters.length ? posters : [start]).map((p) => ({ tex: load(p, true), aspect: p.aspect || 0.75 }));
+  const openTimer = setTimeout(openQueue, 2500);
 
   const geo = new THREE.PlaneGeometry(1, 1);
   const shadowTex = (() => {
@@ -160,6 +175,7 @@ export function startWall({ canvas, hero, opener, posters, start }) {
   tick();
 
   return () => {
+    stopped = true; clearTimeout(openTimer); queue.length = 0;
     cancelAnimationFrame(raf);
     removeEventListener('resize', onResize);
     materials.forEach((m) => m.dispose());

@@ -46,8 +46,11 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
   useEffect(() => {
     // only the designs ticked "Show in the opening wall"; if none are ticked, use them all
     const picked = posters.filter((p) => p.onWall);
-    const wallPosters = (picked.length ? picked : posters).filter((p) => p.id !== (start && start.id)).map((p) => ({ url: small(p), lqip: p.lqip, aspect: p.aspect || 0.75 }));
-    const first = start ? { url: sized(start.url, 1600), lqip: start.lqip, aspect: start.aspect || 1.6 } : wallPosters[0];
+    // phones get smaller copies: the tiles are small there, so big files only slow the page down
+    const phone = innerWidth < 640;
+    const tile = (p) => (phone ? sized(p.url, 360) || small(p) : small(p));
+    const wallPosters = (picked.length ? picked : posters).filter((p) => p.id !== (start && start.id)).map((p) => ({ url: tile(p), lqip: p.lqip, aspect: p.aspect || 0.75 }));
+    const first = start ? { url: sized(start.url, phone ? 1000 : 1600), lqip: start.lqip, aspect: start.aspect || 1.6 } : wallPosters[0];
     return startWall({ canvas: canvasRef.current, hero: heroRef.current, opener: openerRef.current, posters: wallPosters, start: first });
   }, [posters, start]);
 
