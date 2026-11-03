@@ -27,7 +27,7 @@ export function startWall({ canvas, hero, opener, posters, start }) {
   const queue = []; let active = 0, queueOpen = false;
   const pump = () => {
     // wall designs load a few at a time, so the phone isn't fetching 50 images at once
-    while (queueOpen && !stopped && active < 4 && queue.length) {
+    while (queueOpen && !stopped && active < 6 && queue.length) {
       const job = queue.shift(); active++;
       const done = () => { active--; pump(); };
       imgLoader.load(job.url, (img) => { job.ok(img); done(); }, undefined, done);
