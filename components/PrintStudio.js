@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ITEMS, ITEM_KEYS, COLOURS, DARK_COLOURS, GROUPS } from '@/lib/printItems';
+import dynamic from 'next/dynamic';
+import { ITEMS, ITEM_KEYS, COLOURS, DARK_COLOURS, GROUPS, ITEMS_3D } from '@/lib/printItems';
+
+// the 3D view only loads when someone opens it, so the page stays fast
+const Print3D = dynamic(() => import('./Print3D'), { ssr: false, loading: () => <div className="ps-3d ps-3d-loading">Loading 3D…</div> });
 
 const W = 400, H = 440;
 const MAX_TOTAL = 4 * 1024 * 1024; // everything sent together must stay under Vercel's 4.5 MB limit
@@ -138,6 +142,7 @@ export default function PrintStudio() {
   const [designs, setDesigns] = useState({}); // { front: {...}, back: {...} }
   const [qty, setQty] = useState({});
   const [option, setOption] = useState('');
+  const [view3d, setView3d] = useState(false);
   const [state, setState] = useState('idle'); // idle | sending | sent | error
   const [error, setError] = useState('');
   const started = useRef(Date.now());
@@ -146,6 +151,8 @@ export default function PrintStudio() {
 
   const item = ITEMS[itemKey];
   const sides = Object.keys(item.sides);
+  const has3d = ITEMS_3D.includes(itemKey);
+  const show3d = view3d && has3d;
   const total = item.sizes ? item.sizes.reduce((n, s) => n + (Number(qty[s]) || 0), 0) : Number(qty.all) || 0;
 
   useEffect(() => {
@@ -236,20 +243,29 @@ export default function PrintStudio() {
 
       <div className="ps">
         <div className="ps-stage">
-          {sides.length > 1 && (
-            <div className="ps-sides" role="group" aria-label="Side">
-              {sides.map((s) => (
-                <button type="button" key={s} aria-pressed={side === s} onClick={() => setSide(s)}>
-                  {s === 'front' ? 'Front' : 'Back'}{designs[s] ? ' •' : ''}
-                </button>
-              ))}
-            </div>
-          )}
-          <div className="ps-canvas">
-            <Mockup itemKey={itemKey} side="front" colour={colour} design={designs.front} onMove={update} svgRef={frontRef} hidden={side !== 'front'} />
-            {item.sides.back && <Mockup itemKey={itemKey} side="back" colour={colour} design={designs.back} onMove={update} svgRef={backRef} hidden={side !== 'back'} />}
+          <div className="ps-bar">
+            {sides.length > 1 && !show3d ? (
+              <div className="ps-sides" role="group" aria-label="Side">
+                {sides.map((s) => (
+                  <button type="button" key={s} aria-pressed={side === s} onClick={() => setSide(s)}>
+                    {s === 'front' ? 'Front' : 'Back'}{designs[s] ? ' •' : ''}
+                  </button>
+                ))}
+              </div>
+            ) : <span />}
+            {has3d && (
+              <div className="ps-sides" role="group" aria-label="View">
+                <button type="button" aria-pressed={!show3d} onClick={() => setView3d(false)}>2D</button>
+                <button type="button" aria-pressed={show3d} onClick={() => setView3d(true)}>3D</button>
+              </div>
+            )}
           </div>
-          <p className="ps-hint">{current ? 'Drag your design to move it. Drag the blue dot to resize.' : 'Your design goes inside the dashed box.'}</p>
+          <div className="ps-canvas">
+            <Mockup itemKey={itemKey} side="front" colour={colour} design={designs.front} onMove={update} svgRef={frontRef} hidden={show3d || side !== 'front'} />
+            {item.sides.back && <Mockup itemKey={itemKey} side="back" colour={colour} design={designs.back} onMove={update} svgRef={backRef} hidden={show3d || side !== 'back'} />}
+            {show3d && <Print3D itemKey={itemKey} designs={designs} />}
+          </div>
+          <p className="ps-hint">{show3d ? 'Drag to turn it around. Scroll or pinch to zoom.' : current ? 'Drag your design to move it. Drag the blue dot to resize.' : 'Your design goes inside the dashed box.'}</p>
         </div>
 
         <div className="ps-panel">
