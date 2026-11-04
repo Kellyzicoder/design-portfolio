@@ -9,6 +9,7 @@ export default function SiteNav({ settings: s, home = false, extra = [] }) {
   const links = [
     { href: '/ui-ux', label: 'UI/UX' },
     { href: '/designs', label: 'Designs' },
+    { href: '/printing', label: 'Printing' },
     ...extra.map((x) => ({ href: `${base}${x.href}`, label: x.label })),
     { href: `${base}#about`, label: 'About' },
     { href: `${base}#youtube`, label: 'YouTube' },
