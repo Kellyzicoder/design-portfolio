@@ -8,9 +8,9 @@ create table if not exists public.print_quotes (
   email        text not null,
   phone        text,
   organisation text,
-  item         text not null,            -- T-shirt, Hoodie, Tote bag, Banner
+  item         text not null,            -- T-shirt, Mug, Stickers, Flyers, Vinyl banner, ...
   colour       text,
-  banner_size  text,
+  size_option  text,                     -- paper size, banner size, mug size, ...
   quantity     integer not null default 1,
   sizes        jsonb not null default '{}',  -- e.g. {"M": 4, "L": 2}
   placement    jsonb not null default '{}',  -- where the design sits on each side

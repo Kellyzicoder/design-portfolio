@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ITEMS, ITEM_KEYS, COLOURS } from '@/lib/printItems';
+import { ITEMS, ITEM_KEYS, COLOURS, DARK_COLOURS, GROUPS } from '@/lib/printItems';
 
 const W = 400, H = 440;
 const MAX_TOTAL = 4 * 1024 * 1024; // everything sent together must stay under Vercel's 4.5 MB limit
@@ -49,7 +49,9 @@ function Mockup({ itemKey, side, colour, design, onMove, svgRef, hidden }) {
   const item = ITEMS[itemKey];
   const { shapes, area } = item.sides[side];
   const fill = item.colours ? colour.fill : '#ffffff';
-  const dark = ['Black', 'Navy', 'Red'].includes(colour.name) && item.colours;
+  const dark = DARK_COLOURS.includes(colour.name) && item.colours;
+  // signs and paper: the design is cut to the item's own shape, not just a box
+  const body = item.bleed ? shapes.filter((s) => !s.line).slice(-1)[0] : null;
   const stroke = dark ? 'rgba(255,255,255,.28)' : 'rgba(11,12,15,.28)';
   const drag = useRef(null);
   const clipId = `clip-${itemKey}-${side}`;
@@ -93,7 +95,7 @@ function Mockup({ itemKey, side, colour, design, onMove, svgRef, hidden }) {
       onPointerMove={move} onPointerUp={end} onPointerCancel={end}
     >
       <defs>
-        <clipPath id={clipId}><rect x={area.x} y={area.y} width={area.w} height={area.h} /></clipPath>
+        <clipPath id={clipId}>{body ? <path d={body.d} /> : <rect x={area.x} y={area.y} width={area.w} height={area.h} />}</clipPath>
         <linearGradient id={`shade-${itemKey}-${side}`} x1="0" x2="1">
           <stop offset="0" stopColor="#000" stopOpacity=".10" />
           <stop offset=".22" stopColor="#000" stopOpacity="0" />
@@ -135,7 +137,7 @@ export default function PrintStudio() {
   const [side, setSide] = useState('front');
   const [designs, setDesigns] = useState({}); // { front: {...}, back: {...} }
   const [qty, setQty] = useState({});
-  const [bannerSize, setBannerSize] = useState('');
+  const [option, setOption] = useState('');
   const [state, setState] = useState('idle'); // idle | sending | sent | error
   const [error, setError] = useState('');
   const started = useRef(Date.now());
@@ -156,6 +158,7 @@ export default function PrintStudio() {
   function chooseItem(k) {
     setItemKey(k); setSide('front'); setQty({});
     // designs keep their place, but a back design is dropped for things with one side
+    setOption(ITEMS[k].options && ITEMS[k].options.length === 1 ? ITEMS[k].options[0] : '');
     if (!ITEMS[k].sides.back) setDesigns((d) => (d.front ? { front: d.front } : {}));
   }
 
@@ -167,8 +170,10 @@ export default function PrintStudio() {
     try {
       const d = await loadDesign(file);
       const area = item.sides[side].area;
-      const fit = Math.min(1, (area.h / area.w) * (d.w0 / d.h0)) * 0.85;
-      setDesigns((all) => ({ ...all, [side]: { ...d, cx: 0.5, cy: itemKey === 'banner' ? 0.5 : 0.42, scale: fit } }));
+      const ratio = (area.h / area.w) * (d.w0 / d.h0);
+      // paper and signs: cover the whole thing; clothing and mugs: fit inside the print area
+      const fit = item.bleed ? Math.max(1, ratio) : Math.min(1, ratio) * 0.85;
+      setDesigns((all) => ({ ...all, [side]: { ...d, cx: 0.5, cy: item.bleed ? 0.5 : 0.42, scale: fit } }));
       if (state === 'error') { setState('idle'); setError(''); }
     } catch {
       setError('That image could not be opened. Please try a different file.'); setState('error');
@@ -185,13 +190,13 @@ export default function PrintStudio() {
     const placed = sides.filter((s) => designs[s]);
     if (!placed.length) { setError('Please upload your design first.'); setState('error'); return; }
     if (total < 1) { setError('Please add how many you need.'); setState('error'); return; }
-    if (itemKey === 'banner' && !bannerSize) { setError('Please choose a banner size.'); setState('error'); return; }
+    if (item.options && !option) { setError(`Please choose a ${item.optionLabel.toLowerCase()}.`); setState('error'); return; }
     setState('sending');
     try {
       const fd = new FormData(e.currentTarget);
       fd.append('item', itemKey);
       fd.append('colour', item.colours ? colour.name : '');
-      fd.append('banner_size', itemKey === 'banner' ? bannerSize : '');
+      fd.append('size_option', item.options ? option : '');
       fd.append('quantity', String(total));
       fd.append('sizes', JSON.stringify(item.sizes ? Object.fromEntries(item.sizes.filter((s) => Number(qty[s]) > 0).map((s) => [s, Number(qty[s])])) : {}));
       fd.append('placement', JSON.stringify(Object.fromEntries(placed.map((s) => [s, { x: +designs[s].cx.toFixed(3), y: +designs[s].cy.toFixed(3), width: +designs[s].scale.toFixed(3) }]))));
@@ -251,8 +256,15 @@ export default function PrintStudio() {
           <fieldset>
             <legend>1. Pick an item</legend>
             <div className="ps-chips" role="group" aria-label="Item">
-              {ITEM_KEYS.map((k) => (
-                <button type="button" key={k} aria-pressed={itemKey === k} onClick={() => chooseItem(k)}>{ITEMS[k].label}</button>
+              {GROUPS.map((g) => (
+                <div className="ps-group" key={g.key}>
+                  <span>{g.label}</span>
+                  <div>
+                    {ITEM_KEYS.filter((k) => ITEMS[k].group === g.key).map((k) => (
+                      <button type="button" key={k} aria-pressed={itemKey === k} onClick={() => chooseItem(k)}>{ITEMS[k].label}</button>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
             {item.colours && (
@@ -266,12 +278,12 @@ export default function PrintStudio() {
                 </div>
               </div>
             )}
-            {item.bannerSizes && (
+            {item.options && (
               <label className="field">
-                <span>Banner size *</span>
-                <select value={bannerSize} onChange={(e) => setBannerSize(e.target.value)}>
-                  <option value="" disabled>Choose a size…</option>
-                  {item.bannerSizes.map((b) => <option key={b}>{b}</option>)}
+                <span>{item.optionLabel} *</span>
+                <select value={option} onChange={(e) => setOption(e.target.value)}>
+                  <option value="" disabled>Choose one…</option>
+                  {item.options.map((b) => <option key={b}>{b}</option>)}
                 </select>
               </label>
             )}
@@ -305,7 +317,7 @@ export default function PrintStudio() {
                 {item.sizes.map((s) => (
                   <label key={s} className="field">
                     <span>{s}</span>
-                    <input type="number" inputMode="numeric" min="0" max="999" value={qty[s] || ''} placeholder="0"
+                    <input type="number" inputMode="numeric" min="0" max="99999" value={qty[s] || ''} placeholder="0"
                       onChange={(e) => setQty((q) => ({ ...q, [s]: e.target.value }))} />
                   </label>
                 ))}
@@ -313,7 +325,7 @@ export default function PrintStudio() {
             ) : (
               <label className="field">
                 <span>Quantity</span>
-                <input type="number" inputMode="numeric" min="1" max="999" value={qty.all || ''} placeholder="1"
+                <input type="number" inputMode="numeric" min="1" max="99999" value={qty.all || ''} placeholder={item.bulk ? '100' : '1'}
                   onChange={(e) => setQty({ all: e.target.value })} />
               </label>
             )}
@@ -352,7 +364,7 @@ export default function PrintStudio() {
         </div>
         <label className="field">
           <span>Anything else?</span>
-          <textarea name="notes" rows={4} placeholder="Delivery address area, print placement notes, or if you want me to design it for you." />
+          <textarea name="notes" rows={4} placeholder="Delivery area, paper or finish you want, number of booklet pages, or if you want me to design it for you." />
         </label>
       </fieldset>
 

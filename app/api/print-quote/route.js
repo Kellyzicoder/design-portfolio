@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { sendEmail, table, esc, isEmail } from '@/lib/email';
 import { insertRow, uploadFile, dbReady, safeName } from '@/lib/db';
 import { notifyCrm } from '@/lib/notify';
-import { ITEMS, COLOURS } from '@/lib/printItems';
+import { ITEMS, COLOURS, GROUPS } from '@/lib/printItems';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,8 +30,8 @@ export async function POST(req) {
     organisation: field(fd, 'organisation', 200),
     item: item ? item.label : '',
     colour: COLOURS.some((c) => c.name === field(fd, 'colour', 30)) ? field(fd, 'colour', 30) : null,
-    banner_size: item && item.bannerSizes && item.bannerSizes.includes(field(fd, 'banner_size', 80)) ? field(fd, 'banner_size', 80) : null,
-    quantity: Math.min(9999, Math.max(0, parseInt(field(fd, 'quantity', 6), 10) || 0)),
+    size_option: item && item.options && item.options.includes(field(fd, 'size_option', 80)) ? field(fd, 'size_option', 80) : null,
+    quantity: Math.min(99999, Math.max(0, parseInt(field(fd, 'quantity', 7), 10) || 0)),
     sizes,
     placement: json(field(fd, 'placement', 1000)),
     deadline: dateOrNull(field(fd, 'deadline', 10)),
@@ -74,7 +74,7 @@ export async function POST(req) {
       replyTo: r.email,
       html: `<h2 style="font-family:Arial,sans-serif">New print quote request</h2>${table([
         ['Name', r.name], ['Email', r.email], ['Phone', r.phone], ['Business / church', r.organisation],
-        ['Item', what], ['Banner size', r.banner_size], ['Quantity', r.quantity], ['Sizes', sizeText],
+        ['Item', what], ['Type', (GROUPS.find((g) => g.key === item.group) || {}).label], [item.optionLabel || 'Size', r.size_option], ['Quantity', r.quantity], ['Sizes', sizeText],
         ['Design on', Object.keys(r.placement).join(' and ')], ['Needed by', r.deadline],
         ['Heard about me', r.source], ['Ad source', [r.utm_source, r.utm_campaign].filter(Boolean).join(' / ')],
         ['Notes', r.notes],
