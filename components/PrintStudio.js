@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { ITEMS, ITEM_KEYS, COLOURS, DARK_COLOURS, GROUPS, ITEMS_3D } from '@/lib/printItems';
+import { ITEMS, ITEM_KEYS, COLOURS, GROUPS, ITEMS_3D, isDark } from '@/lib/printItems';
 
 // the 3D view only loads when someone opens it, so the page stays fast
 const Print3D = dynamic(() => import('./Print3D'), { ssr: false, loading: () => <div className="ps-3d ps-3d-loading">Loading 3D…</div> });
@@ -52,8 +52,8 @@ async function snapshot(svg) {
 function Mockup({ itemKey, side, colour, design, onMove, svgRef, hidden }) {
   const item = ITEMS[itemKey];
   const { shapes, area } = item.sides[side];
-  const fill = item.colours ? colour.fill : '#ffffff';
-  const dark = DARK_COLOURS.includes(colour.name) && item.colours;
+  const fill = colour.fill;
+  const dark = isDark(fill);
   // signs and paper: the design is cut to the item's own shape, not just a box
   const body = item.bleed ? shapes.filter((s) => !s.line).slice(-1)[0] : null;
   const stroke = dark ? 'rgba(255,255,255,.28)' : 'rgba(11,12,15,.28)';
@@ -163,6 +163,7 @@ export default function PrintStudio() {
   }, []);
 
   function chooseItem(k) {
+    if (ITEMS[k].colours && colour.custom) setColour(COLOURS[0]);
     setItemKey(k); setSide('front'); setQty({});
     // designs keep their place, but a back design is dropped for things with one side
     setOption(ITEMS[k].options && ITEMS[k].options.length === 1 ? ITEMS[k].options[0] : '');
@@ -202,7 +203,7 @@ export default function PrintStudio() {
     try {
       const fd = new FormData(e.currentTarget);
       fd.append('item', itemKey);
-      fd.append('colour', item.colours ? colour.name : '');
+      fd.append('colour', colour.custom ? colour.fill : colour.name);
       fd.append('size_option', item.options ? option : '');
       fd.append('quantity', String(total));
       fd.append('sizes', JSON.stringify(item.sizes ? Object.fromEntries(item.sizes.filter((s) => Number(qty[s]) > 0).map((s) => [s, Number(qty[s])])) : {}));
@@ -263,7 +264,7 @@ export default function PrintStudio() {
           <div className="ps-canvas">
             <Mockup itemKey={itemKey} side="front" colour={colour} design={designs.front} onMove={update} svgRef={frontRef} hidden={show3d || side !== 'front'} />
             {item.sides.back && <Mockup itemKey={itemKey} side="back" colour={colour} design={designs.back} onMove={update} svgRef={backRef} hidden={show3d || side !== 'back'} />}
-            {show3d && <Print3D itemKey={itemKey} designs={designs} />}
+            {show3d && <Print3D itemKey={itemKey} designs={designs} colour={colour.fill} />}
           </div>
           <p className="ps-hint">{show3d ? 'Drag to turn it around. Scroll or pinch to zoom.' : current ? 'Drag your design to move it. Drag the blue dot to resize.' : 'Your design goes inside the dashed box.'}</p>
         </div>
@@ -283,17 +284,23 @@ export default function PrintStudio() {
                 </div>
               ))}
             </div>
-            {item.colours && (
-              <div className="field">
-                <span>Colour: {colour.name}</span>
-                <div className="ps-swatches" role="group" aria-label="Colour">
-                  {COLOURS.map((c) => (
-                    <button type="button" key={c.name} aria-pressed={colour.name === c.name} aria-label={c.name} title={c.name}
-                      style={{ background: c.fill }} onClick={() => setColour(c)} />
-                  ))}
-                </div>
+            <div className="field">
+              <span>{item.colours ? 'Colour' : 'Background colour'}: {colour.name}</span>
+              <div className="ps-swatches" role="group" aria-label={item.colours ? 'Colour' : 'Background colour'}>
+                {COLOURS.map((c) => (
+                  <button type="button" key={c.name} aria-pressed={colour.name === c.name} aria-label={c.name} title={c.name}
+                    style={{ background: c.fill }} onClick={() => setColour(c)} />
+                ))}
+                {!item.colours && (
+                  // prints can be any colour: pick your own
+                  <label className={`ps-swatch-any${colour.custom ? ' on' : ''}`} title="Any colour" style={colour.custom ? { background: colour.fill } : undefined}>
+                    <input type="color" aria-label="Pick any background colour" value={colour.fill}
+                      onChange={(e) => setColour({ name: e.target.value.toUpperCase(), fill: e.target.value, custom: true })} />
+                  </label>
+                )}
               </div>
-            )}
+              {!item.colours && <small className="ps-total">Pick a colour, or tap the rainbow to choose any colour. Your design prints on top.</small>}
+            </div>
             {item.options && (
               <label className="field">
                 <span>{item.optionLabel} *</span>
