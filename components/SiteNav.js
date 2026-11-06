@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-// Floating pill navbar used on every page: logo, links, and an email button on the right.
-// On phones the links and the email button move into a menu opened by the ☰ button.
+// Floating pill navbar used on every page: logo, links, and a Contact me button on the right.
+// Contact me opens a small menu: request a design quote, get a printing quote, or email.
+// On phones the links and the contact options move into a menu opened by the ☰ button.
 export default function SiteNav({ settings: s, home = false, extra = [] }) {
   const base = home ? '' : '/';
   const links = [
@@ -14,21 +15,25 @@ export default function SiteNav({ settings: s, home = false, extra = [] }) {
     { href: `${base}#about`, label: 'About' },
     { href: `${base}#youtube`, label: 'YouTube' },
   ];
-  const email = s.email;
-  const cta = email
-    ? { href: `mailto:${email}`, long: 'Contact me', short: 'Contact me' }
-    : { href: s.fiverrUrl || `${base}#contact`, long: 'Contact me', short: 'Contact me', ext: !!s.fiverrUrl };
-  const ctaProps = cta.ext ? { target: '_blank', rel: 'noopener noreferrer' } : {};
+  const contact = [
+    { href: '/request', label: 'Request a design quote', note: 'Logos, flyers, social media, websites' },
+    { href: '/printing', label: 'Get a printing quote', note: 'Shirts, mugs, banners, flyers and more' },
+    s.email && { href: `mailto:${s.email}`, label: 'Email me', note: s.email },
+  ].filter(Boolean);
 
   const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
-  // close the menu with Escape
+  const [drop, setDrop] = useState(false);
+  const dropRef = useRef(null);
+  const close = () => { setOpen(false); setDrop(false); };
+  // close menus with Escape, and the contact menu when clicking elsewhere
   useEffect(() => {
-    if (!open) return;
+    if (!open && !drop) return;
     const onKey = (e) => { if (e.key === 'Escape') close(); };
+    const onClick = (e) => { if (drop && dropRef.current && !dropRef.current.contains(e.target)) setDrop(false); };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
+    document.addEventListener('pointerdown', onClick);
+    return () => { window.removeEventListener('keydown', onKey); document.removeEventListener('pointerdown', onClick); };
+  }, [open, drop]);
 
   return (
     <nav className={`nav${open ? ' open' : ''}`} aria-label="Main">
@@ -39,9 +44,17 @@ export default function SiteNav({ settings: s, home = false, extra = [] }) {
         <ul>
           {links.map((l) => <li key={l.href}><a href={l.href}>{l.label}</a></li>)}
         </ul>
-        <a className="nav-cta" href={cta.href} {...ctaProps}>
-          <span className="long">{cta.long}</span><span className="short">{cta.short}</span>
-        </a>
+        <div className="nav-contact" ref={dropRef}>
+          <button type="button" className="nav-cta" aria-haspopup="true" aria-expanded={drop} aria-controls="nav-contact-menu" onClick={() => setDrop((v) => !v)}>
+            Contact me
+            <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </button>
+          <div className="nav-drop" id="nav-contact-menu" hidden={!drop}>
+            {contact.map((c) => (
+              <a key={c.href} href={c.href} onClick={close}><b>{c.label}</b><small>{c.note}</small></a>
+            ))}
+          </div>
+        </div>
         <button className="nav-burger" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} aria-controls="nav-menu" onClick={() => setOpen((v) => !v)}>
           <span /><span /><span />
         </button>
@@ -50,7 +63,10 @@ export default function SiteNav({ settings: s, home = false, extra = [] }) {
         <ul>
           {links.map((l) => <li key={l.href}><a href={l.href} onClick={close}>{l.label}</a></li>)}
         </ul>
-        <a className="nav-menu-cta" href={cta.href} onClick={close} {...ctaProps}>{cta.long}</a>
+        <a className="nav-menu-cta" href={contact[0].href} onClick={close}>{contact[0].label}</a>
+        <div className="nav-menu-more">
+          {contact.slice(1).map((c) => <a key={c.href} href={c.href} onClick={close}>{c.label}</a>)}
+        </div>
       </div>
     </nav>
   );
