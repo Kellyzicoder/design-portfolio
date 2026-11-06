@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { sendEmail, table, esc, isEmail } from '@/lib/email';
 import { insertRow, uploadFile, dbReady, safeName } from '@/lib/db';
 import { notifyCrm } from '@/lib/notify';
-import { ITEMS, COLOURS, GROUPS } from '@/lib/printItems';
+import { ITEMS, COLOURS, GROUPS, isHex } from '@/lib/printItems';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -29,7 +29,8 @@ export async function POST(req) {
     phone: field(fd, 'phone', 40),
     organisation: field(fd, 'organisation', 200),
     item: item ? item.label : '',
-    colour: COLOURS.some((c) => c.name === field(fd, 'colour', 30)) ? field(fd, 'colour', 30) : null,
+    // a named colour (clothing etc.) or any #hex background colour for prints
+    colour: COLOURS.some((c) => c.name === field(fd, 'colour', 30)) || (item && !item.colours && isHex(field(fd, 'colour', 30))) ? field(fd, 'colour', 30) : null,
     size_option: item && item.options && item.options.includes(field(fd, 'size_option', 80)) ? field(fd, 'size_option', 80) : null,
     quantity: Math.min(99999, Math.max(0, parseInt(field(fd, 'quantity', 7), 10) || 0)),
     sizes,
@@ -67,7 +68,7 @@ export async function POST(req) {
   }
 
   const sizeText = Object.entries(sizes).map(([s, n]) => `${s} × ${n}`).join(', ');
-  const what = [r.colour, r.item].filter(Boolean).join(' ');
+  const what = item.colours ? [r.colour, r.item].filter(Boolean).join(' ') : `${r.item}${r.colour ? ` (background ${r.colour})` : ''}`;
   try {
     await sendEmail({
       subject: `New print quote: ${r.quantity} × ${what} for ${r.name}`,

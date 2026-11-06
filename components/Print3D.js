@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { buildModel, createScene, dispose } from '@/lib/print3d';
 
 // 3D preview on the Printing page: drag to turn the item, scroll or pinch to zoom.
-export default function Print3D({ itemKey, designs }) {
+export default function Print3D({ itemKey, designs, colour = '#ffffff' }) {
   const box = useRef(null);
   const view = useRef(null);
 
@@ -17,12 +17,12 @@ export default function Print3D({ itemKey, designs }) {
   // rebuild the model when the item or design changes
   useEffect(() => {
     let cancelled = false;
-    buildModel(itemKey, designs).then((model) => {
+    buildModel(itemKey, designs, colour).then((model) => {
       if (cancelled || !view.current) return dispose(model);
       view.current.setModel(model);
     });
     return () => { cancelled = true; };
-  }, [itemKey, designs]);
+  }, [itemKey, designs, colour]);
 
   return <div ref={box} className="ps-3d" aria-label="3D preview. Drag to turn it around, scroll or pinch to zoom." role="img" />;
 }
