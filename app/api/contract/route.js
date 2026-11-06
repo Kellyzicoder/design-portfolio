@@ -5,6 +5,7 @@ import { contractParts } from '@/lib/contract';
 import { contractPdf } from '@/lib/contractPdf';
 import { getSiteData } from '@/lib/getSiteData';
 import { notifyCrm } from '@/lib/notify';
+import { DESIGN_TYPES, BRIEF_DAYS, MAX_PER_WEEK, perMonth, monthlyPrice, readyDay, monthlyTerms } from '@/lib/monthlyPlan';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -16,6 +17,20 @@ export async function POST(req) {
   try { b = await req.json(); } catch { return NextResponse.json({ error: 'The form could not be read. Please try again.' }, { status: 400 }); }
   if (str(b.website) || Number(b.t || 0) < 3000) return NextResponse.json({ ok: true });
 
+  // monthly plan (kelvstudio.com/monthly): the price and wording are worked out here, not taken from the form
+  const monthly = b.kind === 'monthly';
+  const plan = monthly ? {
+    perWeek: Math.max(1, Math.min(MAX_PER_WEEK, parseInt(b.perWeek, 10) || 1)),
+    briefDay: BRIEF_DAYS.includes(b.briefDay) ? b.briefDay : 'Monday',
+    types: (Array.isArray(b.types) ? b.types : []).filter((t) => DESIGN_TYPES.includes(t)),
+    start: /^\d{4}-\d{2}-\d{2}$/.test(str(b.start, 10)) ? str(b.start, 10) : null,
+    notes: str(b.notes, 2000),
+  } : null;
+  if (plan) {
+    b.project = `Monthly design plan: ${perMonth(plan.perWeek)} designs a month (${plan.perWeek} a week)${plan.types.length ? ` - ${plan.types.join(', ')}` : ''}`;
+    b.price = String(monthlyPrice(plan.perWeek));
+    b.deadline = plan.start;
+  }
   const price = str(b.price, 20).replace(/[^\d.]/g, '');
   const c = {
     name: str(b.name, 120),
@@ -27,12 +42,15 @@ export async function POST(req) {
     deadline: /^\d{4}-\d{2}-\d{2}$/.test(str(b.deadline, 10)) ? str(b.deadline, 10) : null,
     signature: str(b.signature, 120),
   };
+  if (plan && (!plan.types.length || !plan.start)) {
+    return NextResponse.json({ error: 'Please pick at least one kind of design and a start date.' }, { status: 400 });
+  }
   if (!c.name || !isEmail(c.email) || !c.project || !c.signature || b.agree !== true) {
     return NextResponse.json({ error: 'Please fill in your name, email and project, type your name to sign, and tick "I agree".' }, { status: 400 });
   }
 
   const { settings } = await getSiteData();
-  const terms = settings.contractTerms;
+  const terms = plan ? monthlyTerms(plan) : settings.contractTerms;
   const parts = contractParts(terms);
   const signedAt = new Date().toLocaleString('en-NZ', { timeZone: 'Pacific/Auckland', dateStyle: 'long', timeStyle: 'short' });
   const ip = (req.headers.get('x-forwarded-for') || '').split(',')[0].trim();
@@ -43,12 +61,23 @@ export async function POST(req) {
 
   let bytes;
   try {
-    bytes = Buffer.from(await contractPdf({ parts, c: { ...c, ip, ref }, signedAt, signedDate }));
+    const extra = plan ? {
+      title: 'Monthly Design Plan Agreement',
+      rows: [
+        ['Plan', c.project],
+        ['Monthly price', `NZ$${c.price.toFixed(2)}  -  paid upfront before each month's work starts`],
+        ['Extra designs', `NZ$${(c.price / perMonth(plan.perWeek)).toFixed(2)} each, added to the next invoice`],
+        ['Weekly routine', `Details by ${plan.briefDay}, designs ready by ${readyDay(plan.briefDay)}`],
+        ['Start date', plan.start ? new Date(`${plan.start}T12:00:00Z`).toLocaleDateString('en-NZ', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : 'To be agreed'],
+        ...(plan.notes ? [['Notes', plan.notes]] : []),
+      ],
+    } : {};
+    bytes = Buffer.from(await contractPdf({ parts, c: { ...c, ip, ref }, signedAt, signedDate, ...extra }));
   } catch (e) {
     console.error('PDF failed', e);
     return NextResponse.json({ error: 'Sorry, the agreement could not be created. Please try again.' }, { status: 500 });
   }
-  const filename = `Kelv-Studio-Agreement-${ref}-${safeName(c.name)}.pdf`;
+  const filename = `Kelv-Studio-${plan ? 'Monthly-Plan' : 'Agreement'}-${ref}-${safeName(c.name)}.pdf`;
 
   // test versions only: ?preview=1 returns the PDF without saving, emailing or notifying
   if (process.env.VERCEL_ENV !== 'production' && new URL(req.url).searchParams.get('preview') === '1') {
@@ -79,11 +108,12 @@ export async function POST(req) {
 
   try {
     await sendEmail({
-      subject: `Signed agreement ${ref}: ${c.project} (${c.name})`,
+      subject: `${plan ? 'Monthly plan signed' : 'Signed agreement'} ${ref}: ${c.project} (${c.name})`,
       replyTo: c.email,
       html: `<h2 style="font-family:Arial,sans-serif">Design agreement signed</h2>${table([
         ['Client', c.name], ['Email', c.email], ['Phone', c.phone], ['Church / business', c.organisation],
-        ['Project', c.project], ['Agreed price', c.price != null ? `NZ$${c.price.toFixed(2)}` : ''], ['Delivery date', c.deadline],
+        ['Project', c.project], [plan ? 'Monthly price' : 'Agreed price', c.price != null ? `NZ$${c.price.toFixed(2)}` : ''], [plan ? 'Start date' : 'Delivery date', c.deadline],
+        ...(plan ? [['Details by', plan.briefDay], ['Notes', plan.notes]] : []),
         ['Agreement no.', ref], ['Signed', `${c.signature} · ${signedAt}`],
       ])}<p style="font-family:Arial,sans-serif;color:#5d6470">The signed PDF is attached.</p>`,
       attachments: [{ filename, content: bytes.toString('base64') }],
@@ -97,7 +127,7 @@ export async function POST(req) {
   }
   if (problems.length) console.warn('Contract form partly failed:', problems);
   await notifyCrm({
-    title: 'Agreement signed',
+    title: plan ? 'Monthly plan signed' : 'Agreement signed',
     body: `${c.name}: ${c.project}${c.price != null ? ` · NZ$${c.price.toFixed(2)}` : ''}`,
     url: '/orders',
   });
