@@ -33,6 +33,18 @@ export async function POST(req) {
     utm_source: field(fd, 'utm_source', 120),
     utm_campaign: field(fd, 'utm_campaign', 120),
   };
+  // website requests: join the extra answers into the details, so no database change is needed
+  if (r.design_type === 'Website') {
+    const web = [
+      ['Website for', field(fd, 'web_purpose', 120)],
+      ['Web address', field(fd, 'web_address', 120)],
+      ['Style', field(fd, 'web_style', 120)],
+      ['Colours', field(fd, 'web_colours', 200)],
+      ['Visitors fill in', field(fd, 'web_form', 500)],
+      ['Extras', fd.getAll('web_extras').map((x) => String(x).slice(0, 60)).slice(0, 10).join(', ')],
+    ].filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
+    if (web.length) r.details = `${web.join('\n')}\n\n${r.details}`.slice(0, 6000);
+  }
   if (!r.name || !isEmail(r.email) || !r.design_type || !r.deadline || !r.details) {
     return NextResponse.json({ error: 'Please fill in your name, a valid email, what you need, the date and the details.' }, { status: 400 });
   }

@@ -22,6 +22,8 @@ export default function RequestForm({ types }) {
   const [state, setState] = useState('idle'); // idle | sending | sent | error
   const [error, setError] = useState('');
   const [files, setFiles] = useState([]);
+  const [type, setType] = useState('');
+  const isWebsite = type === 'Website';
   const started = useRef(Date.now());
   const [utm, setUtm] = useState({ source: '', campaign: '' });
 
@@ -84,13 +86,14 @@ export default function RequestForm({ types }) {
         <div className="row2">
           <label className="field">
             <span>What do you need? *</span>
-            <select name="type" required defaultValue="">
+            <select name="type" required value={type} onChange={(e) => setType(e.target.value)}>
               <option value="" disabled>Choose one…</option>
               {types.map((t) => <option key={t}>{t}</option>)}
+              <option>Website</option>
               <option>Something else</option>
             </select>
           </label>
-          <label className="field">
+          {!isWebsite && <label className="field">
             <span>Size or where it will be used</span>
             <select name="format" defaultValue="">
               <option value="">Not sure yet</option>
@@ -101,25 +104,72 @@ export default function RequestForm({ types }) {
               <option>Screen / projector (wide)</option>
               <option>More than one size</option>
             </select>
-          </label>
+          </label>}
         </div>
+        {isWebsite && (
+          <>
+            <div className="row2">
+              <label className="field">
+                <span>What is the website for? *</span>
+                <select name="web_purpose" required defaultValue="">
+                  <option value="" disabled>Choose one…</option>
+                  <option>Wedding (RSVP)</option>
+                  <option>Event</option>
+                  <option>Business</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label className="field">
+                <span>Web address</span>
+                <select name="web_address" defaultValue="Free link">
+                  <option>Free link</option>
+                  <option>Our own address (costs extra each year)</option>
+                  <option>Not sure</option>
+                </select>
+              </label>
+            </div>
+            <div className="row2">
+              <label className="field">
+                <span>Style</span>
+                <select name="web_style" defaultValue="">
+                  <option value="">Not sure yet</option>
+                  <option>Luxury</option>
+                  <option>Simple</option>
+                  <option>Modern</option>
+                  <option>Fun / colourful</option>
+                </select>
+              </label>
+              <label className="field"><span>Colours</span><input name="web_colours" placeholder="e.g. black and gold" /></label>
+            </div>
+            <label className="field">
+              <span>What should visitors fill in?</span>
+              <input name="web_form" placeholder="e.g. name, coming or not, plus-one, food needs" />
+            </label>
+            <div className="field">
+              <span>Extras</span>
+              {['Photo gallery', 'Countdown', 'Map to the venue', 'Download guest list'].map((x) => (
+                <label key={x} className="check"><input type="checkbox" name="web_extras" value={x} />{x}</label>
+              ))}
+            </div>
+          </>
+        )}
         <div className="row2">
           <label className="field"><span>Event date</span><input name="eventDate" type="date" /></label>
           <label className="field"><span>When do you need it by? *</span><input name="deadline" type="date" required /></label>
         </div>
         <label className="field">
           <span>Details *</span>
-          <textarea name="details" rows={6} required placeholder="What is it for? What should it say? Names, dates, place, colours, the feeling you want, anything you have in mind." />
+          <textarea name="details" rows={6} required placeholder={isWebsite ? 'Names, the date, the venue, and anything else you want on the site.' : 'What is it for? What should it say? Names, dates, place, colours, the feeling you want, anything you have in mind.'} />
         </label>
         <div className="row2">
           <label className="field">
             <span>Budget (NZ$)</span>
-            <select name="budget" defaultValue="">
+            <select name="budget" defaultValue="" key={isWebsite ? 'web' : 'design'}>
               <option value="">Not sure</option>
-              <option>Under $50</option>
-              <option>$50 – $100</option>
-              <option>$100 – $200</option>
-              <option>$200+</option>
+              {(isWebsite
+                ? ['Under $300', '$300 – $500', '$500 – $800', '$800+']
+                : ['Under $50', '$50 – $100', '$100 – $200', '$200+']
+              ).map((b) => <option key={b}>{b}</option>)}
             </select>
           </label>
           <label className="field">
