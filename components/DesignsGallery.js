@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { SECTIONS as DEFAULT_SECTIONS } from '@/lib/sections';
-import Viewer from './Viewer';
+import Viewer, { hasCaption } from './Viewer';
 import { spread, mixSections } from '@/lib/spread';
 
 // Sanity images can be resized on the fly; local files are used as they are
@@ -73,7 +73,7 @@ export default function DesignsGallery({ posters, sections }) {
         {shownList.map((p, i) => (
           <button key={p.id} onClick={() => setVi(i)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75), '--i': i }}>
             <img src={sized(p.url, isFeatured ? 600 : 400)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" decoding="async" onLoad={onImgLoad} ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }} />
-            <span className="cap"><b>{p.title}</b><small>{sectionName[p.section] || ''}</small></span>
+            <span className="cap"><b>{p.title}</b><small>{sectionName[p.section] || ''}{hasCaption(p) ? ' · Read the story' : ''}</small></span>
           </button>
         ))}
       </div>

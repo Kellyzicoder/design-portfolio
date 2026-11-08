@@ -119,7 +119,23 @@ footer{background:var(--ink);color:#9aa1ad;padding-block:24px calc(24px + env(sa
 #viewer img{max-width:100%;max-height:calc(100dvh - 140px);box-shadow:0 30px 80px rgba(0,0,0,.25)}
 #viewer .meta{display:flex;gap:14px;align-items:center;font-size:13px;color:var(--soft)}
 #viewer .meta button,#viewer .x{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--paper)}
-#viewer .x{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:max(14px,env(safe-area-inset-right,0px))}
+#viewer .x{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:max(14px,env(safe-area-inset-right,0px));z-index:2}
+#viewer .v-main{display:flex;flex-direction:column;align-items:center;gap:14px;max-width:100%}
+#viewer .viewer-img{width:min(calc(100vw - 32px),calc((100dvh - 150px) * var(--a)))}
+/* caption beside the design (computer) or under it (phone) */
+#viewer{overflow-y:auto}
+#viewer .box.has-story{flex-direction:row;align-items:center;gap:36px}
+#viewer .has-story .viewer-img{width:min(calc(100vw - 32px - 400px),calc((100dvh - 150px) * var(--a)))}
+.v-story{width:340px;max-height:calc(100dvh - 80px);overflow-y:auto;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:22px 22px 8px;text-align:left;box-shadow:0 20px 50px rgba(0,0,0,.08)}
+.v-story h2{font-size:20px;line-height:1.2;margin:0 0 14px;letter-spacing:-.01em}
+.v-story h3{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin:0 0 5px}
+.v-story p{font-size:14.5px;line-height:1.55;margin:0 0 16px;white-space:pre-line}
+@media (max-width:900px){
+  #viewer:has(.has-story){place-items:start center}
+  #viewer .box.has-story{flex-direction:column;gap:16px;padding-block:44px 8px}
+  #viewer .has-story .viewer-img{width:min(calc(100vw - 32px),calc((100dvh - 210px) * var(--a)))}
+  .v-story{width:min(560px,calc(100vw - 32px));max-height:none}
+}
 
 @media (max-width:760px){
   .nav ul{display:none}
