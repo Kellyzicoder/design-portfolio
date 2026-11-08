@@ -38,7 +38,7 @@ export default {
     },
     {
       name: 'brief',
-      title: 'The brief',
+      title: 'Brief',
       type: 'text',
       rows: 3,
       fieldset: 'story',
