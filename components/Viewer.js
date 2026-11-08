@@ -7,8 +7,8 @@ export const sized = (url, w) => (url && url.includes('cdn.sanity.io') ? `${url}
 export const GRID_W = 800; // size used in the grids (already downloaded when the viewer opens)
 const FULL_W = 1600;
 
-// the caption: the brief, what I did, and how the design developed (all optional)
-const STORY = [['brief', 'The brief'], ['work', 'What I did'], ['process', 'How it developed']];
+// the caption: brief, my role, process and tools (all optional)
+const STORY = [['brief', 'Brief'], ['work', 'My role'], ['process', 'Process'], ['tools', 'Tools']];
 export const hasCaption = (p) => STORY.some(([k]) => p && p[k]);
 
 // load an image in the background so it's ready before it's needed

@@ -10,7 +10,7 @@ export default {
     {
       name: 'story',
       title: 'Caption (the story behind this design)',
-      description: 'Shown next to the design when someone opens it. Leave empty to show no caption. 1–3 short sentences each is plenty.',
+      description: 'Shown next to the design when someone opens it. Leave empty to show no caption. Brief, My role, Process and Tools. 1–3 short sentences each is plenty.',
       options: { collapsible: true, collapsed: false },
     },
   ],
@@ -46,7 +46,7 @@ export default {
     },
     {
       name: 'work',
-      title: 'What I did',
+      title: 'My role',
       type: 'text',
       rows: 3,
       fieldset: 'story',
@@ -54,11 +54,18 @@ export default {
     },
     {
       name: 'process',
-      title: 'How the design developed',
+      title: 'Process',
       type: 'text',
       rows: 3,
       fieldset: 'story',
       description: 'How it changed from first idea to final: feedback, choices you made and why, the result.',
+    },
+    {
+      name: 'tools',
+      title: 'Tools',
+      type: 'string',
+      fieldset: 'story',
+      description: 'e.g. Photoshop',
     },
     {
       name: 'onWall',
