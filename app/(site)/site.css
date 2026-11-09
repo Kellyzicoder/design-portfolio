@@ -65,7 +65,13 @@ section[id]{scroll-margin-top:96px}
 .sticky{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;height:calc(100dvh - env(safe-area-inset-top,0px));overflow:hidden;
   background:radial-gradient(60% 70% at 12% 0%,#d6dce7 0%,rgba(214,220,231,0) 70%),linear-gradient(180deg,#eceff3,var(--bg) 60%)}
 #wall{position:absolute;inset:0;width:100%;height:100%;display:block}
-.opener{position:absolute;left:0;right:0;top:0;z-index:2;text-align:center;padding-top:calc(88px + clamp(24px,5vh,60px));will-change:transform,opacity}
+.opener{position:absolute;inset:0;z-index:2;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:88px;padding-bottom:clamp(16px,4vh,48px);will-change:transform,opacity}
+.opener>*:not(.hero-tools){position:relative;z-index:1}
+/* faded design tools behind the headline */
+.hero-tools{position:absolute;inset:0;pointer-events:none;color:#1d2a4a;z-index:0}
+.hero-tools svg{position:absolute;opacity:.13;will-change:transform;margin:-20px 0 0 -20px}
+.hero-tools svg.ht-far{opacity:.08}
+@media (max-width:760px){.hero-tools svg{opacity:.08}.hero-tools svg.ht-far{display:none}}
 .opener h1{margin:0 auto;font-weight:400;font-size:clamp(40px,min(7.4vw,11vh),118px);line-height:1;letter-spacing:-.045em;max-width:13ch;text-wrap:balance}
 .opener p{margin:clamp(14px,2.6vh,30px) auto 0;font-size:clamp(15px,1.6vw,21px);max-width:46ch;color:#1d2026}
 .cta{display:inline-flex;align-items:center;gap:14px;margin-top:clamp(18px,3vh,34px);background:var(--blue);color:#fff;text-decoration:none;
