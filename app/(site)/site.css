@@ -487,3 +487,33 @@ footer a{color:inherit}
 .ps-3d:active{cursor:grabbing}
 .ps-3d canvas{display:block;width:100%;height:100%}
 .ps-3d-loading{display:grid;place-items:center;color:var(--soft);font-size:14px}
+
+/* service pages: brief, recent work, contact */
+.svc-brief{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:clamp(20px,3vw,40px);margin:0 0 clamp(48px,7vw,88px)}
+.svc-brief h2,.svc-work .work-head h2,.svc-contact h2{font-weight:400;letter-spacing:-.035em;line-height:1;font-size:clamp(28px,3.6vw,44px);margin:0 0 18px}
+.svc-list,.svc-steps{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.svc-list li,.svc-steps li{display:grid;gap:3px;padding:14px 16px;background:var(--paper);border:1px solid var(--line);border-radius:14px}
+.svc-list b,.svc-steps b{font-weight:600;font-size:16px}
+.svc-list span,.svc-steps span{color:var(--soft);font-size:14.5px}
+.svc-steps{counter-reset:step}
+.svc-steps li{counter-increment:step;grid-template-columns:auto 1fr;column-gap:12px}
+.svc-steps li::before{content:counter(step);grid-row:span 2;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:600}
+.svc-work{margin:0 0 clamp(48px,7vw,88px)}
+.svc-work .work-head{margin-bottom:20px;align-items:baseline}
+.svc-more{color:var(--ink);font-size:15px}
+.masonry.showcase{columns:4 200px}
+.svc-contact{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:clamp(16px,3vw,32px);align-items:start}
+.svc-quote{background:var(--ink);color:#fff;border-radius:20px;padding:clamp(24px,4vw,40px);display:grid;gap:14px;justify-items:start}
+.svc-quote .eyebrow{color:rgba(255,255,255,.6);margin:0}
+.svc-quote h2{margin:0}
+.svc-quote p{margin:0;color:rgba(255,255,255,.8)}
+.svc-quote .btn{background:#fff;color:var(--ink);border-color:#fff}
+.svc-quote .svc-mail{font-size:14px}
+.svc-quote .svc-mail a{color:#fff}
+.svc-ask{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:clamp(22px,4vw,36px)}
+.svc-ask h3{margin:0 0 6px;font-weight:500;font-size:22px;letter-spacing:-.02em}
+.svc-ask>p{margin:0 0 18px;color:var(--soft)}
+.ask-form{gap:16px}
+.ask-form .field textarea{min-height:110px}
+.ask-done{padding:0;border:0;background:none}
+.ask-done h3{margin:0;font-weight:500;font-size:22px}

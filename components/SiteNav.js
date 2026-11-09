@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 // Floating pill navbar used on every page: logo, links, and a Contact me button on the right.
-// Services opens a small menu with UI/UX, Designs and Printing.
+// Services opens a small menu with UI/UX, Designs and Printing. Work shows everything in one place.
 // Contact me opens a small menu: request a design quote, get a printing quote, or email.
 // On phones the links and the contact options move into a menu opened by the ☰ button.
 export default function SiteNav({ settings: s, home = false, extra = [] }) {
@@ -14,6 +14,7 @@ export default function SiteNav({ settings: s, home = false, extra = [] }) {
       { href: '/designs', label: 'Designs', note: 'Flyers, logos and social media' },
       { href: '/printing', label: 'Printing', note: 'Shirts, mugs, banners, flyers and more' },
     ] },
+    { href: '/work', label: 'Work' },
     ...extra.map((x) => ({ href: `${base}${x.href}`, label: x.label })),
     { href: `${base}#about`, label: 'About' },
     { href: `${base}#youtube`, label: 'YouTube' },

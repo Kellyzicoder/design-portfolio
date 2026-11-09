@@ -10,6 +10,7 @@ export default async function sitemap() {
   const pages = [
     page('', 1, 'weekly'),
     page('/ui-ux', 0.9),
+    page('/work', 0.9, 'weekly'),
     page('/designs', 0.9, 'weekly'),
     page('/printing', 0.9),
     page('/request', 0.8),
