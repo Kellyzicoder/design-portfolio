@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { SECTIONS as DEFAULT_SECTIONS } from '@/lib/sections';
 import { startWall } from './wall';
 import SiteNav from './SiteNav';
+import HeroTools from './HeroTools';
 import { spread, mixSections } from '@/lib/spread';
 
 // Sanity images can be resized on the fly; local files are used as they are
@@ -75,6 +76,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
         <div className="sticky">
           <canvas id="wall" ref={canvasRef} aria-label="Wall of poster designs" />
           <div className="opener pad" ref={openerRef}>
+            <HeroTools />
             <h1>{s.headline}</h1>
             <p>{s.subline}</p>
             <a className="cta" href="#work">{s.buttonText} <Arrow /></a>

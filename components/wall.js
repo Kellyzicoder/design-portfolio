@@ -143,7 +143,8 @@ export function startWall({ canvas, hero, opener, posters, start }) {
     const sAsp = start.aspect || 1.6;
     let sw0 = Math.min(W * (W < 640 ? 0.92 : 0.76), 1500), sh0 = sw0 / sAsp;
     if (sh0 > H * 0.75) { sh0 = H * 0.75; sw0 = sh0 * sAsp; } // tall designs: limit the height
-    const top0 = Math.max(textBottom + 36, H * 0.5);
+    // the first design starts just below the screen and rises in as you scroll
+    const top0 = Math.max(textBottom + 36, H + 24);
     const y0 = H / 2 - (top0 + sh0 / 2);
     // same shape the whole way, so nothing is cut off
     const h = lerp(sh0, ch, a), w = h * sAsp;
