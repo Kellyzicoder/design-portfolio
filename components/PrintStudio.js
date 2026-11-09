@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { ITEMS, ITEM_KEYS, COLOURS, GROUPS, ITEMS_3D, isDark } from '@/lib/printItems';
+import { ITEMS, ITEM_KEYS, COLOURS, GROUPS, ITEMS_3D, BULK_MIN, isDark } from '@/lib/printItems';
 
 // the 3D view only loads when someone opens it, so the page stays fast
 const Print3D = dynamic(() => import('./Print3D'), { ssr: false, loading: () => <div className="ps-3d ps-3d-loading">Loading 3D…</div> });
@@ -353,6 +353,11 @@ export default function PrintStudio() {
               </label>
             )}
             <small className="ps-total">Total: {total}</small>
+            {total >= BULK_MIN ? (
+              <p className="ps-bulk"><b>Bulk order</b> {BULK_MIN}+ items get a lower price per item. Bulk orders can take longer to make, so your quote will include the ready date.</p>
+            ) : (
+              <small className="ps-total">Need {BULK_MIN} or more? That's a bulk order, with a lower price per item.</small>
+            )}
           </fieldset>
         </div>
       </div>

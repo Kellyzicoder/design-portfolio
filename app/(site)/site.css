@@ -476,7 +476,9 @@ footer a{color:inherit}
 .ps-row{display:flex;align-items:center;gap:14px}
 .ps-file{flex:1;min-width:0;color:var(--soft);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ps-link{background:none;border:0;padding:6px 0;color:var(--blue);font:inherit;font-size:14px;cursor:pointer}
-.ps-total{color:var(--soft);font-size:13px}
+.ps-total{display:block;color:var(--soft);font-size:13px}
+.ps-bulk{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:rgba(40,160,90,.1);color:var(--ink);font-size:13px;line-height:1.45}
+.ps-bulk b{margin-right:4px}
 .field input[type=range]{padding:0;min-height:32px;border:0;accent-color:var(--blue)}
 @media (max-width:860px){.ps{grid-template-columns:1fr}.ps-stage{position:static}}
 .ps-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
