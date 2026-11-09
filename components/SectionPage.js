@@ -19,7 +19,7 @@ export default function SectionPage({ settings: s, section, parent, groups, link
 
       <main className="pad section-page">
         <div className="wrap">
-          <a className="back" href="/designs">← All designs</a>
+          <a className="back" href="/work#designs">← All work</a>
           <div className="work-head">
             <div>
               {parent && <p className="eyebrow">{parent.title}</p>}

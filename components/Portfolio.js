@@ -105,7 +105,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
                   <em>View case studies <span aria-hidden="true">→</span></em>
                 </span>
               </a>
-              <a className="pick" href="/designs">
+              <a className="pick" href="/work#designs">
                 <span className="pick-img posters">
                   {preview.map((p) => <img key={p.id} src={sized(p.url, 500)} alt="" loading="lazy" decoding="async" style={blur(p)} />)}
                 </span>
