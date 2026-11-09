@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { niceDate } from '@/lib/niceDate';
 import { sendEmail, table, esc, isEmail } from '@/lib/email';
 import { insertRow, uploadFile, dbReady, safeName } from '@/lib/db';
 import { notifyCrm } from '@/lib/notify';
@@ -75,7 +76,7 @@ export async function POST(req) {
       replyTo: r.email,
       html: `<h2 style="font-family:Arial,sans-serif">New design request</h2>${table([
         ['Name', r.name], ['Email', r.email], ['Phone', r.phone], ['Church / business', r.organisation],
-        ['Design', r.design_type], ['Size / use', r.format], ['Event date', r.event_date], ['Needed by', r.deadline],
+        ['Design', r.design_type], ['Size / use', r.format], ['Event date', niceDate(r.event_date)], ['Needed by', niceDate(r.deadline)],
         ['Budget', r.budget], ['Heard about me', r.source], ['Ad source', [r.utm_source, r.utm_campaign].filter(Boolean).join(' / ')],
         ['Details', r.details],
       ])}<p style="font-family:Arial,sans-serif;color:#5d6470">Reply to this email to answer ${esc(r.name)} directly.</p>`,
@@ -92,7 +93,7 @@ export async function POST(req) {
   const from = r.utm_source ? `ad: ${r.utm_source}` : r.source;
   await notifyCrm({
     title: `New request: ${r.design_type}`,
-    body: `${r.name}${r.organisation ? ` (${r.organisation})` : ''}${from ? ` · from ${from}` : ''}${r.deadline ? ` · needs it ${r.deadline}` : ''}`,
+    body: `${r.name}${r.organisation ? ` (${r.organisation})` : ''}${from ? ` · from ${from}` : ''}${r.deadline ? ` · needs it ${niceDate(r.deadline)}` : ''}`,
     url: savedId ? `/requests/${savedId}` : '/requests',
     tag: savedId ? `req-${savedId}` : undefined,
   });
