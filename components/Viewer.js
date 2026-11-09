@@ -7,6 +7,10 @@ export const sized = (url, w) => (url && url.includes('cdn.sanity.io') ? `${url}
 export const GRID_W = 800; // size used in the grids (already downloaded when the viewer opens)
 const FULL_W = 1600;
 
+// the caption: brief, my role, process and tools (all optional)
+const STORY = [['brief', 'Brief'], ['work', 'My role'], ['process', 'Process'], ['tools', 'Tools']];
+export const hasCaption = (p) => STORY.some(([k]) => p && p[k]);
+
 // load an image in the background so it's ready before it's needed
 const warmed = new Set();
 function warm(url) {
@@ -29,6 +33,7 @@ export default function Viewer({ list, index, label, onClose, onIndex }) {
   const [sharpReady, setSharpReady] = useState(false);
   const small = sized(p.url, GRID_W);
   const full = sized(p.url, FULL_W);
+  const hasStory = hasCaption(p);
 
   useEffect(() => {
     setSharpReady(false);
@@ -65,12 +70,13 @@ export default function Viewer({ list, index, label, onClose, onIndex }) {
       }}
     >
       <button className="x" aria-label="Close" onClick={onClose}>✕</button>
-      <div className="box">
+      <div className={`box${hasStory ? ' has-story' : ''}`}>
+        <div className="v-main">
         <div
           className="viewer-img"
           style={{
             aspectRatio: String(p.aspect || 0.75),
-            width: `min(calc(100vw - 32px), calc((100dvh - 150px) * ${p.aspect || 0.75}))`,
+            '--a': p.aspect || 0.75,
           }}
         >
           {p.lqip && <img className="v-blur" src={p.lqip} alt="" aria-hidden="true" />}
@@ -92,6 +98,15 @@ export default function Viewer({ list, index, label, onClose, onIndex }) {
           <span>{p.title || label} · {index + 1} / {list.length}</span>
           <button aria-label="Next" onClick={() => go(1)}>▶</button>
         </div>
+        </div>
+        {hasStory && (
+          <aside className="v-story" key={`st-${p.id}`}>
+            {p.title && <h2>{p.title}</h2>}
+            {STORY.filter(([k]) => p[k]).map(([k, h]) => (
+              <section key={k}><h3>{h}</h3><p>{p[k]}</p></section>
+            ))}
+          </aside>
+        )}
       </div>
     </div>
   );

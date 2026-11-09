@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Viewer, { sized, GRID_W } from './Viewer';
+import Viewer, { sized, GRID_W, hasCaption } from './Viewer';
 import SiteNav from './SiteNav';
 
 const blur = (p) => (p.lqip ? { backgroundImage: `url(${p.lqip})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined);
@@ -53,7 +53,7 @@ export default function SectionPage({ settings: s, section, parent, groups, link
                         onLoad={onImgLoad}
                         ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }}
                       />
-                      <span className="cap"><b>{p.title}</b><small>{g.title}</small></span>
+                      <span className="cap"><b>{p.title}</b><small>{g.title}{hasCaption(p) ? ' · Read the story' : ''}</small></span>
                     </button>
                   );
                 })}

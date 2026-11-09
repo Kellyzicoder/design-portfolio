@@ -6,6 +6,14 @@ export default {
   name: 'poster',
   title: 'Poster',
   type: 'document',
+  fieldsets: [
+    {
+      name: 'story',
+      title: 'Caption (the story behind this design)',
+      description: 'Shown next to the design when someone opens it. Leave empty to show no caption. Brief, My role, Process and Tools. 1–3 short sentences each is plenty.',
+      options: { collapsible: true, collapsed: false },
+    },
+  ],
   fields: [
     {
       name: 'image',
@@ -27,6 +35,37 @@ export default {
       title: 'Title (optional)',
       type: 'string',
       description: 'Shown when someone opens the poster. Leave empty to use the file name.',
+    },
+    {
+      name: 'brief',
+      title: 'Brief',
+      type: 'text',
+      rows: 3,
+      fieldset: 'story',
+      description: 'Who it was for and what they needed. e.g. "A countdown series to build excitement for International Sunday on Instagram."',
+    },
+    {
+      name: 'work',
+      title: 'My role',
+      type: 'text',
+      rows: 3,
+      fieldset: 'story',
+      description: 'Your part: concept, layout, type, colours, photo editing, sizes you delivered.',
+    },
+    {
+      name: 'process',
+      title: 'Process',
+      type: 'text',
+      rows: 3,
+      fieldset: 'story',
+      description: 'How it changed from first idea to final: feedback, choices you made and why, the result.',
+    },
+    {
+      name: 'tools',
+      title: 'Tools',
+      type: 'string',
+      fieldset: 'story',
+      description: 'e.g. Photoshop',
     },
     {
       name: 'onWall',
