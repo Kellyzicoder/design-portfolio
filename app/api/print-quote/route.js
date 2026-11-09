@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { niceDate } from '@/lib/niceDate';
 import { sendEmail, table, esc, isEmail } from '@/lib/email';
 import { insertRow, uploadFile, dbReady, safeName } from '@/lib/db';
 import { notifyCrm } from '@/lib/notify';
@@ -76,7 +77,7 @@ export async function POST(req) {
       html: `<h2 style="font-family:Arial,sans-serif">New print quote request</h2>${table([
         ['Name', r.name], ['Email', r.email], ['Phone', r.phone], ['Business / church', r.organisation],
         ['Item', what], ['Type', (GROUPS.find((g) => g.key === item.group) || {}).label], [item.optionLabel || 'Size', r.size_option], ['Quantity', r.quantity >= BULK_MIN ? `${r.quantity} (bulk order)` : r.quantity], ['Sizes', sizeText],
-        ['Design on', Object.keys(r.placement).join(' and ')], ['Needed by', r.deadline],
+        ['Design on', Object.keys(r.placement).join(' and ')], ['Needed by', niceDate(r.deadline)],
         ['Heard about me', r.source], ['Ad source', [r.utm_source, r.utm_campaign].filter(Boolean).join(' / ')],
         ['Notes', r.notes],
       ])}<p style="font-family:Arial,sans-serif;color:#5d6470">The mockup and design files are attached. Reply to this email to send ${esc(r.name)} a quote, then send a Stripe invoice to get paid.</p>`,
@@ -93,7 +94,7 @@ export async function POST(req) {
   const from = r.utm_source ? `ad: ${r.utm_source}` : r.source;
   await notifyCrm({
     title: `New ${r.quantity >= BULK_MIN ? 'BULK ' : ''}print quote: ${r.quantity} × ${r.item}`,
-    body: `${r.name}${r.organisation ? ` (${r.organisation})` : ''}${from ? ` · from ${from}` : ''}${r.deadline ? ` · needs it ${r.deadline}` : ''}`,
+    body: `${r.name}${r.organisation ? ` (${r.organisation})` : ''}${from ? ` · from ${from}` : ''}${r.deadline ? ` · needs it ${niceDate(r.deadline)}` : ''}`,
     url: savedId ? `/print-quotes/${savedId}` : '/print-quotes',
     tag: savedId ? `print-${savedId}` : undefined,
   });
