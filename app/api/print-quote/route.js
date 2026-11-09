@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { sendEmail, table, esc, isEmail } from '@/lib/email';
 import { insertRow, uploadFile, dbReady, safeName } from '@/lib/db';
 import { notifyCrm } from '@/lib/notify';
-import { ITEMS, COLOURS, GROUPS, isHex } from '@/lib/printItems';
+import { ITEMS, COLOURS, GROUPS, BULK_MIN, isHex } from '@/lib/printItems';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -71,11 +71,11 @@ export async function POST(req) {
   const what = item.colours ? [r.colour, r.item].filter(Boolean).join(' ') : `${r.item}${r.colour ? ` (background ${r.colour})` : ''}`;
   try {
     await sendEmail({
-      subject: `New print quote: ${r.quantity} × ${what} for ${r.name}`,
+      subject: `New ${r.quantity >= BULK_MIN ? 'BULK ' : ''}print quote: ${r.quantity} × ${what} for ${r.name}`,
       replyTo: r.email,
       html: `<h2 style="font-family:Arial,sans-serif">New print quote request</h2>${table([
         ['Name', r.name], ['Email', r.email], ['Phone', r.phone], ['Business / church', r.organisation],
-        ['Item', what], ['Type', (GROUPS.find((g) => g.key === item.group) || {}).label], [item.optionLabel || 'Size', r.size_option], ['Quantity', r.quantity], ['Sizes', sizeText],
+        ['Item', what], ['Type', (GROUPS.find((g) => g.key === item.group) || {}).label], [item.optionLabel || 'Size', r.size_option], ['Quantity', r.quantity >= BULK_MIN ? `${r.quantity} (bulk order)` : r.quantity], ['Sizes', sizeText],
         ['Design on', Object.keys(r.placement).join(' and ')], ['Needed by', r.deadline],
         ['Heard about me', r.source], ['Ad source', [r.utm_source, r.utm_campaign].filter(Boolean).join(' / ')],
         ['Notes', r.notes],
@@ -92,7 +92,7 @@ export async function POST(req) {
   if (problems.length) console.warn('Print quote partly failed:', problems);
   const from = r.utm_source ? `ad: ${r.utm_source}` : r.source;
   await notifyCrm({
-    title: `New print quote: ${r.quantity} × ${r.item}`,
+    title: `New ${r.quantity >= BULK_MIN ? 'BULK ' : ''}print quote: ${r.quantity} × ${r.item}`,
     body: `${r.name}${r.organisation ? ` (${r.organisation})` : ''}${from ? ` · from ${from}` : ''}${r.deadline ? ` · needs it ${r.deadline}` : ''}`,
     url: savedId ? `/print-quotes/${savedId}` : '/print-quotes',
     tag: savedId ? `print-${savedId}` : undefined,
