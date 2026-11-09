@@ -3,17 +3,17 @@
 import { useEffect, useState } from 'react';
 
 // Floating pill navbar used on every page: logo, links, and a Contact me button on the right.
-// Work opens a small menu with UI/UX and Designs.
+// Services opens a small menu with UI/UX, Designs and Printing.
 // Contact me opens a small menu: request a design quote, get a printing quote, or email.
 // On phones the links and the contact options move into a menu opened by the ☰ button.
 export default function SiteNav({ settings: s, home = false, extra = [] }) {
   const base = home ? '' : '/';
   const links = [
-    { id: 'work', label: 'Work', children: [
+    { id: 'services', label: 'Services', children: [
       { href: '/ui-ux', label: 'UI/UX', note: 'Websites and apps' },
       { href: '/designs', label: 'Designs', note: 'Flyers, logos and social media' },
+      { href: '/printing', label: 'Printing', note: 'Shirts, mugs, banners, flyers and more' },
     ] },
-    { href: '/printing', label: 'Printing' },
     ...extra.map((x) => ({ href: `${base}${x.href}`, label: x.label })),
     { href: `${base}#about`, label: 'About' },
     { href: `${base}#youtube`, label: 'YouTube' },
@@ -25,7 +25,7 @@ export default function SiteNav({ settings: s, home = false, extra = [] }) {
   ].filter(Boolean);
 
   const [open, setOpen] = useState(false);
-  const [drop, setDrop] = useState(null); // which small menu is open: 'work', 'contact' or null
+  const [drop, setDrop] = useState(null); // which small menu is open: 'services', 'contact' or null
   const toggle = (id) => setDrop((d) => (d === id ? null : id));
   const close = () => { setOpen(false); setDrop(null); };
   // close menus with Escape, and the small menus when clicking elsewhere
