@@ -4,8 +4,8 @@ import { useEffect, useRef } from 'react';
 
 /*
   Faded design-tool icons behind the headline (pen, brush, type, eyedropper...).
-  They drift gently away from the cursor, each at its own depth, so the background feels alive.
-  Phones and "reduce motion" get a still version.
+  They drift gently away from the cursor (or a tap / drag on phones), each at its own depth.
+  People with "reduce motion" turned on get a still version.
 */
 const P = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' };
 const ICONS = {
@@ -37,15 +37,22 @@ export default function HeroTools() {
   useEffect(() => {
     const root = ref.current;
     if (!root) return;
-    const still = matchMedia('(prefers-reduced-motion: reduce)').matches || !matchMedia('(pointer: fine)').matches;
-    if (still) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const items = [...root.children];
-    let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
-    const onMove = (e) => {
-      // -1 .. 1 from the centre of the screen
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0, back = 0;
+    // -1 .. 1 from the centre of the screen
+    const aim = (e) => {
       tx = (e.clientX / innerWidth) * 2 - 1;
       ty = (e.clientY / innerHeight) * 2 - 1;
       if (!raf) raf = requestAnimationFrame(step);
+    };
+    // mouse: follow it. Finger: follow the tap or drag, then drift back when the finger lifts.
+    const onMove = (e) => { if (e.pointerType === 'mouse' || e.buttons || e.pointerType === 'touch') aim(e); };
+    const onDown = (e) => { clearTimeout(back); aim(e); };
+    const onUp = (e) => {
+      if (e.pointerType === 'mouse') return;
+      clearTimeout(back);
+      back = setTimeout(() => { tx = 0; ty = 0; if (!raf) raf = requestAnimationFrame(step); }, 900);
     };
     function step() {
       x += (tx - x) * 0.08; y += (ty - y) * 0.08;
@@ -56,7 +63,14 @@ export default function HeroTools() {
       raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.001 ? requestAnimationFrame(step) : 0;
     }
     addEventListener('pointermove', onMove, { passive: true });
-    return () => { removeEventListener('pointermove', onMove); cancelAnimationFrame(raf); };
+    addEventListener('pointerdown', onDown, { passive: true });
+    addEventListener('pointerup', onUp, { passive: true });
+    addEventListener('pointercancel', onUp, { passive: true });
+    return () => {
+      removeEventListener('pointermove', onMove); removeEventListener('pointerdown', onDown);
+      removeEventListener('pointerup', onUp); removeEventListener('pointercancel', onUp);
+      cancelAnimationFrame(raf); clearTimeout(back);
+    };
   }, []);
 
   return (
