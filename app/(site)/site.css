@@ -605,3 +605,19 @@ footer a{color:inherit}
 /* single image: no placeholder pattern behind the picture */
 .dp-single .dg-main{background-image:none!important}
 .dg-main,.dg-thumbs button{background-repeat:no-repeat;background-size:cover;background-position:center}
+
+/* /review page */
+.review-pick{display:grid;gap:22px}
+.review-google{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 22px;border-radius:14px;background:var(--ink);color:#fff;text-decoration:none}
+.review-google span:first-child{display:grid;gap:4px}
+.review-google b{font-size:18px;font-weight:600}
+.review-google small{color:rgba(255,255,255,.7);font-size:13px}
+.review-google>span:last-child{font-size:22px}
+.review-google:hover{opacity:.92}
+.review-here{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:clamp(20px,4vw,28px)}
+.review-here h2{margin:0 0 4px;font-weight:500;letter-spacing:-.02em;font-size:22px}
+.review-here>p{margin:0 0 20px;color:var(--soft);font-size:15px}
+.star-pick{display:flex;gap:4px}
+.star-pick button{font-size:34px;line-height:1;padding:2px;background:none;border:0;cursor:pointer;color:rgba(11,12,15,.18)}
+.star-pick button.on{color:#f5a623}
+.star-pick button:focus-visible{outline:2px solid var(--blue);border-radius:6px}

@@ -2,7 +2,7 @@ import styles from './Reviews.module.css';
 
 // Sanity images can be resized on the fly; other images are used as they are
 const sized = (url, w) => (url && url.includes('cdn.sanity.io') ? `${url}?w=${w}&fm=webp&q=80` : url);
-const BADGE = { google: 'Google', fiverr: 'Fiverr' };
+const BADGE = { google: 'Google', fiverr: 'Fiverr', site: 'Kelv Studio' };
 const month = (d) => {
   if (!d) return '';
   const t = new Date(d);
