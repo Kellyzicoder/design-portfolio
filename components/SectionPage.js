@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import Viewer, { sized, GRID_W, hasCaption } from './Viewer';
+import { useRouter } from 'next/navigation';
+import { sized, GRID_W, hasCaption } from './Viewer';
+import { openDesign } from '@/lib/openDesign';
 import SiteNav from './SiteNav';
 
 const blur = (p) => (p.lqip ? { backgroundImage: `url(${p.lqip})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined);
@@ -10,7 +12,7 @@ const onImgLoad = (e) => e.currentTarget.classList.add('loaded');
 /* "Show all" page for one section: every poster at its real shape, nothing cropped. */
 export default function SectionPage({ settings: s, section, parent, groups, links }) {
   const all = groups.flatMap((g) => g.posters);
-  const [vi, setVi] = useState(-1);
+  const router = useRouter();
   let n = 0;
 
   return (
@@ -44,7 +46,7 @@ export default function SectionPage({ settings: s, section, parent, groups, link
                 {g.posters.map((p) => {
                   const i = n++;
                   return (
-                    <button key={p.id} onClick={() => setVi(i)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75) }}>
+                    <button key={p.id} onClick={() => openDesign(router, p)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75) }}>
                       <img
                         src={sized(p.url, GRID_W)}
                         alt={p.title || `${g.title} design`}
@@ -65,9 +67,6 @@ export default function SectionPage({ settings: s, section, parent, groups, link
       </main>
       <footer className="pad"><span>© {new Date().getFullYear()} Kelvin Mensah</span><a href="/">Back to home</a></footer>
 
-      {vi >= 0 && vi < all.length && (
-        <Viewer list={all} index={vi} label={section.title} onClose={() => setVi(-1)} onIndex={setVi} />
-      )}
     </>
   );
 }
