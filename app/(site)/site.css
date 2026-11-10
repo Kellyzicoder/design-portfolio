@@ -602,3 +602,6 @@ footer a{color:inherit}
 .dp-single .dg-main img{width:auto;max-width:100%;max-height:72vh;margin:0 auto;border-radius:14px;background:none}
 .dp-single .dp-story{margin-top:0;grid-template-columns:1fr;position:sticky;top:110px}
 @media (max-width:900px){.dp-single{grid-template-columns:1fr}.dp-single .dp-story{position:static}}
+/* single image: no placeholder pattern behind the picture */
+.dp-single .dg-main{background-image:none!important}
+.dg-main,.dg-thumbs button{background-repeat:no-repeat;background-size:cover;background-position:center}
