@@ -54,7 +54,7 @@ export default function SectionPage({ settings: s, section, parent, groups, link
                         ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }}
                       />
                       {p.more && p.more.length > 0 && <span className="count" aria-label={`${p.more.length + 1} images`}>+{p.more.length}</span>}
-            <span className="cap"><b>{p.title}</b><small>{g.title}{hasCaption(p) ? ' · Read the story' : ''}</small></span>
+            <span className="cap"><b>{p.title}</b><small>{g.title}</small><i className="cap-cta">{hasCaption(p) ? 'Read the story' : 'View design'} →</i></span>
                     </button>
                   );
                 })}
