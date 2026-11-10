@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import SiteNav from '@/components/SiteNav';
 import BackLink from '@/components/BackLink';
+import DesignGalleryView from '@/components/DesignGalleryView';
 import { getSiteData } from '@/lib/getSiteData';
 import { SECTIONS as DEFAULT_SECTIONS } from '@/lib/sections';
 import { designHref, idFromSlug, sizedUrl } from '@/lib/designUrl';
@@ -62,30 +63,20 @@ export default async function DesignPage({ params }) {
             <div><dt>Images</dt><dd>{images.length}</dd></div>
           </dl>
 
-          <div className="dp-body">
-            <div className="dp-images">
-              {images.map((m, i) => (
-                <figure key={i} className="dp-shot" style={m.lqip ? { backgroundImage: `url(${m.lqip})` } : undefined}>
-                  <img
-                    src={sizedUrl(m.url, 1400)}
-                    alt={m.label ? `${p.title}: ${m.label}` : p.title}
-                    style={{ aspectRatio: String(m.aspect || 0.75) }}
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                    decoding="async"
-                  />
-                  {m.label && <figcaption>{m.label}</figcaption>}
-                </figure>
+          <DesignGalleryView title={p.title} images={images} />
+
+          {story.length > 0 && (
+            <div className="dp-story">
+              {story.map(([k, h]) => (
+                <section key={k}><h2>{h}</h2><p>{p[k]}</p></section>
               ))}
+              <div className="dp-cta-box">
+                <h2>Like this?</h2>
+                <p>Send your brief and get a clear quote by email within 24 hours.</p>
+                <a className="btn" href="/request">Request a design like this</a>
+              </div>
             </div>
-            {story.length > 0 && (
-              <aside className="dp-story">
-                {story.map(([k, h]) => (
-                  <section key={k}><h2>{h}</h2><p>{p[k]}</p></section>
-                ))}
-                <a className="btn dp-cta" href="/request">Request a design like this</a>
-              </aside>
-            )}
-          </div>
+          )}
 
           {(prev || next) && (
             <nav className="dp-nav" aria-label="More designs">

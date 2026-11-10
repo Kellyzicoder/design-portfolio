@@ -567,3 +567,22 @@ footer a{color:inherit}
 .dp-nav .dp-next{text-align:right;grid-column:2}
 @media (max-width:900px){.dp-body{grid-template-columns:1fr}.dp-story{position:static;order:-1}}
 @media (max-width:560px){.dp-nav{grid-template-columns:1fr}.dp-nav .dp-next{grid-column:auto;text-align:left}}
+
+/* design page gallery: main image big, the other images as small boxes beside it */
+.dg{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(14px,2vw,24px);align-items:start;max-width:980px}
+.dg.dg-many{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);max-width:none}
+.dg-main{margin:0;position:sticky;top:110px;background:#e3e6eb center/cover;border-radius:16px;overflow:hidden}
+.dg-main img{display:block;width:100%;height:auto;max-height:78vh;object-fit:contain;background:#e3e6eb;animation:dgfade .3s ease}
+.dg-main figcaption{padding:12px 16px;background:var(--paper);font-size:14px;color:var(--soft);border-top:1px solid var(--line)}
+@keyframes dgfade{from{opacity:.4}to{opacity:1}}
+.dg-thumbs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(10px,1.4vw,16px)}
+.dg-thumbs button{display:grid;gap:0;padding:0;border:2px solid transparent;border-radius:14px;overflow:hidden;background:#e3e6eb center/cover;cursor:pointer;text-align:left;transition:border-color .2s,opacity .2s;opacity:.8}
+.dg-thumbs button:hover{opacity:1}
+.dg-thumbs button[aria-selected="true"]{border-color:var(--ink);opacity:1}
+.dg-thumbs img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
+.dg-thumbs span{padding:8px 10px;font-size:13px;background:var(--paper);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.design-page .dp-story{position:static;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:clamp(16px,2vw,28px);margin-top:clamp(28px,4vw,48px);padding:clamp(20px,3vw,32px)}
+.design-page .dp-story section,.dp-cta-box{min-width:0}
+.dp-cta-box{display:grid;gap:10px;align-content:start;justify-items:start}
+.dp-cta-box p{margin:0;color:var(--soft)}
+@media (max-width:900px){.dg.dg-many{grid-template-columns:1fr}.dg-main{position:static}.dg-thumbs{grid-template-columns:repeat(4,minmax(0,1fr))}.dg-thumbs span{display:none}}
