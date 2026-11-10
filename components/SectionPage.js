@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { sized, GRID_W, hasCaption } from './Viewer';
+import Masonry from './Masonry';
 import { openDesign } from '@/lib/openDesign';
 import SiteNav from './SiteNav';
 
@@ -13,7 +14,6 @@ const onImgLoad = (e) => e.currentTarget.classList.add('loaded');
 export default function SectionPage({ settings: s, section, parent, groups, links }) {
   const all = groups.flatMap((g) => g.posters);
   const router = useRouter();
-  let n = 0;
 
   return (
     <>
@@ -42,9 +42,9 @@ export default function SectionPage({ settings: s, section, parent, groups, link
             <section key={g.id} className="group">
               {groups.length > 1 && <h2>{g.title}</h2>}
               {g.posters.length === 0 && <div className="empty">No {g.title} flyers added yet</div>}
-              <div className="masonry">
-                {g.posters.map((p) => {
-                  const i = n++;
+              <Masonry items={g.posters} minCol={120} maxCols={8}
+                render={(p, i) => {
+                  
                   return (
                     <button key={p.id} onClick={() => openDesign(router, p)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75) }}>
                       <img
@@ -59,8 +59,8 @@ export default function SectionPage({ settings: s, section, parent, groups, link
             <span className="cap"><b>{p.title}</b><small>{g.title}</small><i className="cap-cta">{hasCaption(p) ? 'Read the story' : 'View design'} →</i></span>
                     </button>
                   );
-                })}
-              </div>
+                }}
+              />
             </section>
           ))}
         </div>
