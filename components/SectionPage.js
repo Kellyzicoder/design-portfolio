@@ -53,7 +53,8 @@ export default function SectionPage({ settings: s, section, parent, groups, link
                         onLoad={onImgLoad}
                         ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }}
                       />
-                      <span className="cap"><b>{p.title}</b><small>{g.title}{hasCaption(p) ? ' · Read the story' : ''}</small></span>
+                      {p.more && p.more.length > 0 && <span className="count" aria-label={`${p.more.length + 1} images`}>+{p.more.length}</span>}
+            <span className="cap"><b>{p.title}</b><small>{g.title}{hasCaption(p) ? ' · Read the story' : ''}</small></span>
                     </button>
                   );
                 })}

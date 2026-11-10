@@ -73,6 +73,7 @@ export default function DesignsGallery({ posters, sections }) {
         {shownList.map((p, i) => (
           <button key={p.id} onClick={() => setVi(i)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75), '--i': i }}>
             <img src={sized(p.url, isFeatured ? 600 : 400)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" decoding="async" onLoad={onImgLoad} ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }} />
+            {p.more && p.more.length > 0 && <span className="count" aria-label={`${p.more.length + 1} images`}>+{p.more.length}</span>}
             <span className="cap"><b>{p.title}</b><small>{sectionName[p.section] || ''}{hasCaption(p) ? ' · Read the story' : ''}</small></span>
           </button>
         ))}
