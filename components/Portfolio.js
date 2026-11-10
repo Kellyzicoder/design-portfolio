@@ -5,6 +5,7 @@ import { SECTIONS as DEFAULT_SECTIONS } from '@/lib/sections';
 import { startWall } from './wall';
 import SiteNav from './SiteNav';
 import HeroTools from './HeroTools';
+import Reviews from './Reviews';
 import { spread, mixSections } from '@/lib/spread';
 
 // Sanity images can be resized on the fly; local files are used as they are
@@ -33,7 +34,7 @@ function LinkOrText({ href, children }) {
   return href ? <a href={href} target="_blank" rel="noopener noreferrer">{children}</a> : <>{children}</>;
 }
 
-export default function Portfolio({ settings: s, posters, start, testimonials = [], sections, videos = [] }) {
+export default function Portfolio({ settings: s, posters, start, testimonials = [], googleReviews = null, sections, videos = [] }) {
   const SECTIONS = sections && sections.length ? sections : DEFAULT_SECTIONS;
   /* ---------- Selected work: a few designs for the Designs card ---------- */
   const preview = useMemo(() => {
@@ -70,7 +71,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
     <>
       {startUrl && <link rel="preload" as="image" href={startUrl} fetchPriority="high" />}
       {preloads.map((u) => <link key={u} rel="preload" as="image" href={u} />)}
-      <SiteNav settings={s} home extra={testimonials.length > 0 ? [{ href: '#kind-words', label: 'Kind words' }] : []} />
+      <SiteNav settings={s} home extra={testimonials.length + ((googleReviews && googleReviews.reviews.length) || 0) > 0 ? [{ href: '#kind-words', label: 'Kind words' }] : []} />
 
       <div className="hero" id="top" ref={heroRef}>
         <div className="sticky">
@@ -121,32 +122,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
           </div>
         </section>
 
-        {testimonials.length > 0 && (
-          <section className="block pad" id="kind-words" style={{ paddingTop: 0 }}>
-            <div className="wrap">
-              <div className="work-head">
-                <h2>Kind words</h2>
-                <p className="eyebrow" style={{ margin: 0 }}>From people I've designed for</p>
-              </div>
-              <div className={`quotes${testimonials.length === 1 ? ' single' : ''}`}>
-                {testimonials.map((t) => (
-                  <figure key={t.id} className="quote">
-                    <span className="mark" aria-hidden="true">“</span>
-                    <blockquote>{t.feedback}</blockquote>
-                    <figcaption>
-                      {t.photo ? (
-                        <img src={sized(t.photo, 120)} alt="" width="48" height="48" loading="lazy" style={blur(t)} />
-                      ) : (
-                        <span className="initial" aria-hidden="true">{(t.name || '?').trim().charAt(0)}</span>
-                      )}
-                      <span><b>{t.name}</b>{t.company && <small>{t.company}</small>}</span>
-                    </figcaption>
-                  </figure>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+        <Reviews testimonials={testimonials} google={googleReviews} />
 
         <section className="pad" id="about">
           <div className="wrap about">
