@@ -594,3 +594,11 @@ footer a{color:inherit}
 .mgrid>.empty{flex:1}
 /* hover overlay covers the whole tile, edge to edge */
 .masonry .cap{inset:0;left:0;right:0;top:0;bottom:0;border-radius:0}
+
+/* one image: picture and story side by side, picture not too big */
+.dp-single{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:start}
+.dp-single .dg{max-width:none}
+.dp-single .dg-main{position:static;background:none}
+.dp-single .dg-main img{width:auto;max-width:100%;max-height:72vh;margin:0 auto;border-radius:14px;background:none}
+.dp-single .dp-story{margin-top:0;grid-template-columns:1fr;position:sticky;top:110px}
+@media (max-width:900px){.dp-single{grid-template-columns:1fr}.dp-single .dp-story{position:static}}

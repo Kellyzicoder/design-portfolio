@@ -63,6 +63,7 @@ export default async function DesignPage({ params }) {
             <div><dt>Images</dt><dd>{images.length}</dd></div>
           </dl>
 
+          <div className={images.length === 1 ? 'dp-single' : 'dp-multi'}>
           <DesignGalleryView title={p.title} images={images} />
 
           {story.length > 0 && (
@@ -77,6 +78,8 @@ export default async function DesignPage({ params }) {
               </div>
             </div>
           )}
+
+          </div>
 
           {(prev || next) && (
             <nav className="dp-nav" aria-label="More designs">
