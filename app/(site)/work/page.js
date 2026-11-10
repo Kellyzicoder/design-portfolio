@@ -2,6 +2,8 @@ import SiteNav from '@/components/SiteNav';
 import CaseStudies from '@/components/CaseStudies';
 import DesignsGallery from '@/components/DesignsGallery';
 import { getSiteData } from '@/lib/getSiteData';
+import { getGoogleReviews } from '@/lib/googleReviews';
+import Reviews from '@/components/Reviews';
 
 export const revalidate = 60;
 export const metadata = {
@@ -11,7 +13,7 @@ export const metadata = {
 
 // Everything in one place: UI/UX case studies first, then every design with its section tabs.
 export default async function WorkPage() {
-  const { settings, posters, sections } = await getSiteData();
+  const [{ settings, posters, sections, testimonials }, googleReviews] = await Promise.all([getSiteData(), getGoogleReviews()]);
   return (
     <>
       <SiteNav settings={settings} />
@@ -29,6 +31,7 @@ export default async function WorkPage() {
             <div className="work-head"><h2>Graphic design</h2></div>
             <DesignsGallery posters={posters} sections={sections} />
           </section>
+          <Reviews bare testimonials={testimonials} google={googleReviews} />
         </div>
       </main>
     </>

@@ -2,6 +2,8 @@ import SiteNav from '@/components/SiteNav';
 import CaseStudies from '@/components/CaseStudies';
 import { ServiceBrief, ServiceWork, ServiceContact } from '@/components/ServiceSections';
 import { getSiteData } from '@/lib/getSiteData';
+import { getGoogleReviews } from '@/lib/googleReviews';
+import Reviews from '@/components/Reviews';
 
 export const revalidate = 60;
 export const metadata = {
@@ -10,7 +12,7 @@ export const metadata = {
 };
 
 export default async function UiUxPage() {
-  const { settings } = await getSiteData();
+  const [{ settings, testimonials }, googleReviews] = await Promise.all([getSiteData(), getGoogleReviews()]);
   return (
     <>
       <SiteNav settings={settings} />
@@ -38,6 +40,7 @@ export default async function UiUxPage() {
           <ServiceWork title="Case studies">
             <CaseStudies />
           </ServiceWork>
+          <Reviews bare testimonials={testimonials} google={googleReviews} />
           <ServiceContact
             topic="UI/UX"
             quoteHref="/request"

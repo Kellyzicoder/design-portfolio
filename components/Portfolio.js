@@ -71,7 +71,7 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
     <>
       {startUrl && <link rel="preload" as="image" href={startUrl} fetchPriority="high" />}
       {preloads.map((u) => <link key={u} rel="preload" as="image" href={u} />)}
-      <SiteNav settings={s} home extra={testimonials.length + ((googleReviews && googleReviews.reviews.length) || 0) > 0 ? [{ href: '#kind-words', label: 'Kind words' }] : []} />
+      <SiteNav settings={s} home extra={testimonials.length + ((googleReviews && googleReviews.reviews.length) || 0) > 0 ? [{ href: '#reviews', label: 'Reviews' }] : []} />
 
       <div className="hero" id="top" ref={heroRef}>
         <div className="sticky">
@@ -122,7 +122,6 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
           </div>
         </section>
 
-        <Reviews testimonials={testimonials} google={googleReviews} />
 
         <section className="pad" id="about">
           <div className="wrap about">
@@ -178,6 +177,8 @@ export default function Portfolio({ settings: s, posters, start, testimonials = 
             )}
           </div>
         </section>
+
+        <Reviews testimonials={testimonials} google={googleReviews} />
 
         <section className="block pad contact" id="contact">
           <div className="wrap">

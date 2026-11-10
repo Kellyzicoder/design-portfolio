@@ -14,8 +14,8 @@ function Stars({ n }) {
   return <span className={styles.stars} aria-label={`${n} out of 5 stars`}>{'★'.repeat(n)}<span aria-hidden="true">{'★'.repeat(5 - n)}</span></span>;
 }
 
-/* "Kind words": Google reviews (pulled in automatically) plus reviews added in the Studio (Fiverr, direct). */
-export default function Reviews({ testimonials = [], google = null }) {
+/* "Trusted by clients": Google reviews (pulled in automatically) plus reviews added in the Studio (Fiverr, direct). */
+export default function Reviews({ testimonials = [], google = null, bare = false }) {
   const list = [...((google && google.reviews) || []), ...testimonials];
   if (!list.length) return null;
   // repeat the reviews so the strip is long enough, then twice over for a seamless loop
@@ -24,10 +24,10 @@ export default function Reviews({ testimonials = [], google = null }) {
   const half = base.length;
   const loop = [...base, ...base];
   return (
-    <section className="block pad" id="kind-words" style={{ paddingTop: 0 }}>
-      <div className="wrap">
+    <section className={bare ? 'svc-work' : 'block pad'} id="reviews" style={bare ? undefined : { paddingTop: 0 }}>
+      <div className={bare ? undefined : 'wrap'}>
         <div className="work-head">
-          <h2>Kind words</h2>
+          <h2>Trusted by clients</h2>
           {google && google.count > 0 ? (
             <p className={styles.summary}>
               <span className={styles.big}>{Number(google.rating || 0).toFixed(1)}</span>
@@ -36,7 +36,7 @@ export default function Reviews({ testimonials = [], google = null }) {
               <a href="/review">Leave a review</a>
             </p>
           ) : (
-            <p className="eyebrow" style={{ margin: 0 }}>From people I’ve designed for</p>
+            <p className="eyebrow" style={{ margin: 0 }}>Real reviews from people I’ve worked with</p>
           )}
         </div>
         {/* the reviews slide left to right in a loop and pause under the cursor (still for "reduce motion") */}
