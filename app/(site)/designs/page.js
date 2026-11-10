@@ -2,6 +2,8 @@ import SiteNav from '@/components/SiteNav';
 import ShowcaseGrid from '@/components/ShowcaseGrid';
 import { ServiceBrief, ServiceWork, ServiceContact } from '@/components/ServiceSections';
 import { getSiteData } from '@/lib/getSiteData';
+import { getGoogleReviews } from '@/lib/googleReviews';
+import Reviews from '@/components/Reviews';
 import { spread } from '@/lib/spread';
 
 export const revalidate = 60;
@@ -11,7 +13,7 @@ export const metadata = {
 };
 
 export default async function DesignsPage() {
-  const { settings, posters } = await getSiteData();
+  const [{ settings, posters, testimonials }, googleReviews] = await Promise.all([getSiteData(), getGoogleReviews()]);
   // your best pieces (ticked "featured" in the Studio), up to 8
   const picked = posters.filter((p) => p.featured);
   const showcase = spread(picked.length ? picked : posters).slice(0, 8);
@@ -43,6 +45,7 @@ export default async function DesignsPage() {
           <ServiceWork title="Recent designs">
             <ShowcaseGrid posters={showcase} label="Design" />
           </ServiceWork>
+          <Reviews bare testimonials={testimonials} google={googleReviews} />
           <ServiceContact
             topic="Designs"
             quoteHref="/request"

@@ -3,6 +3,8 @@ import PrintStudio from '@/components/PrintStudio';
 import ShowcaseGrid from '@/components/ShowcaseGrid';
 import { ServiceBrief, ServiceWork, ServiceContact } from '@/components/ServiceSections';
 import { getSiteData } from '@/lib/getSiteData';
+import { getGoogleReviews } from '@/lib/googleReviews';
+import Reviews from '@/components/Reviews';
 
 export const revalidate = 60;
 export const metadata = {
@@ -15,7 +17,7 @@ const PRINTED = /team shirt|backdrop|banner|pull-up/i;
 const NOT_PRINT = /youtube|title banner|easter/i;
 
 export default async function PrintingPage() {
-  const { settings, posters } = await getSiteData();
+  const [{ settings, posters, testimonials }, googleReviews] = await Promise.all([getSiteData(), getGoogleReviews()]);
   const printed = posters.filter((p) => PRINTED.test(p.title || '') && !NOT_PRINT.test(p.title || '')).slice(0, 8);
   return (
     <>
@@ -49,6 +51,7 @@ export default async function PrintingPage() {
             <div className="work-head"><h2>Get a printing quote</h2></div>
             <PrintStudio />
           </section>
+          <Reviews bare testimonials={testimonials} google={googleReviews} />
           <ServiceContact
             topic="Printing"
             quoteHref="#quote"
