@@ -4,6 +4,7 @@
 .badge { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 5px 9px; border-radius: 999px; background: var(--bg); color: var(--soft); }
 .google { background: #e8f0fe; color: #1a5fd6; }
 .fiverr { background: #e3f8ec; color: #128a4b; }
+.site { background: #0b0c0f; color: #fff; }
 .summary { margin: 0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--soft); }
 .big { font-size: 28px; font-weight: 600; color: var(--ink); letter-spacing: -.02em; }
 .summary a { color: var(--ink); }
