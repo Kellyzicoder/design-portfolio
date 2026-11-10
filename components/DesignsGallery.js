@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { SECTIONS as DEFAULT_SECTIONS } from '@/lib/sections';
-import Viewer, { hasCaption } from './Viewer';
+import { useRouter } from 'next/navigation';
+import { hasCaption } from './Viewer';
+import { openDesign } from '@/lib/openDesign';
 import { spread, mixSections } from '@/lib/spread';
 
 // Sanity images can be resized on the fly; local files are used as they are
@@ -39,16 +41,29 @@ export default function DesignsGallery({ posters, sections }) {
 
   const [cat, setCat] = useState(FEATURED);
   const [sub, setSub] = useState(null);
-  const pick = (sec) => { setCat(sec); setSub(sec.subs ? sec.subs[0] : null); };
+  const pick = (sec, subId) => {
+    setCat(sec);
+    setSub(sec.subs ? sec.subs.find((x) => x.id === subId) || sec.subs[0] : null);
+  };
+  // remember the open tab, so coming back from a design page lands on the same tab
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem('kvTab') || 'null');
+      const sec = saved && TABS.find((t) => t.id === saved.cat);
+      if (sec && sec.id !== 'featured') pick(sec, saved.sub);
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { sessionStorage.setItem('kvTab', JSON.stringify({ cat: cat.id, sub: sub && sub.id })); } catch {}
+  }, [cat, sub]);
   const active = sub || cat;
   const isFeatured = active.id === 'featured';
   const list = useMemo(() => (isFeatured ? featuredList : spread(bySection[active.id] || [])), [isFeatured, featuredList, bySection, active.id]);
 
-  const [vi, setVi] = useState(-1);
-  const open = vi >= 0 && vi < list.length;
+  const router = useRouter();
   const LIMIT = isFeatured ? 24 : 16; // designs shown per tab before "Show all"
   const shownList = list.slice(0, LIMIT);
-  useEffect(() => setVi(-1), [cat, sub]);
 
   return (
     <>
@@ -71,10 +86,10 @@ export default function DesignsGallery({ posters, sections }) {
       <div className={`masonry${isFeatured ? ' big' : ''}`} key={active.id}>
         {list.length === 0 && <div className="empty">No {active.title} designs added yet</div>}
         {shownList.map((p, i) => (
-          <button key={p.id} onClick={() => setVi(i)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75), '--i': i }}>
+          <button key={p.id} onClick={() => openDesign(router, p)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75), '--i': i }}>
             <img src={sized(p.url, isFeatured ? 600 : 400)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" decoding="async" onLoad={onImgLoad} ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }} />
             {p.more && p.more.length > 0 && <span className="count" aria-label={`${p.more.length + 1} images`}>+{p.more.length}</span>}
-            <span className="cap"><b>{p.title}</b><small>{sectionName[p.section] || ''}{hasCaption(p) ? ' · Read the story' : ''}</small></span>
+            <span className="cap"><b>{p.title}</b><small>{sectionName[p.section] || ''}</small><i className="cap-cta">{hasCaption(p) ? 'Read the story' : 'View design'} →</i></span>
           </button>
         ))}
       </div>
@@ -83,7 +98,6 @@ export default function DesignsGallery({ posters, sections }) {
           <a href={`/work/${active.id}`}>Show all {list.length} {active.title} <span aria-hidden="true">→</span></a>
         </div>
       )}
-      {open && <Viewer list={list} index={vi} label={active.title} onClose={() => setVi(-1)} onIndex={setVi} />}
     </>
   );
 }

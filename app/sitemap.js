@@ -1,4 +1,5 @@
 import { getSiteData } from '@/lib/getSiteData';
+import { designHref } from '@/lib/designUrl';
 
 // The list of pages Google should find (served at kelvstudio.com/sitemap.xml).
 const SITE = 'https://kelvstudio.com';
@@ -20,7 +21,9 @@ export default async function sitemap() {
   ];
   // one page per Work section (and sub-section) from the CMS
   try {
-    const { sections } = await getSiteData();
+    const { sections, posters } = await getSiteData();
+    // one page per design
+    for (const p of posters) if (p.id) pages.push(page(designHref(p), 0.5));
     for (const s of sections) {
       pages.push(page(`/work/${s.id}`, 0.6, 'weekly'));
       for (const x of s.subs || []) pages.push(page(`/work/${x.id}`, 0.5, 'weekly'));
