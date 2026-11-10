@@ -7,7 +7,8 @@ import { designHref, idFromSlug, sizedUrl } from '@/lib/designUrl';
 
 export const revalidate = 60;
 
-const STORY = [['brief', 'Brief'], ['work', 'My role'], ['process', 'Process']];
+// the brief is shown under the title, so the side box has My role and Process
+const STORY = [['work', 'My role'], ['process', 'Process']];
 
 async function load(slug) {
   const data = await getSiteData();
