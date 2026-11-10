@@ -113,7 +113,7 @@ section.block{padding-block:clamp(72px,11vw,130px)}
 
 .contact{background:var(--ink);color:#fff}
 .contact .eyebrow{color:#9aa1ad}
-.contact h2{margin:0 0 40px;font-weight:400;letter-spacing:-.05em;line-height:.92;font-size:clamp(52px,10vw,150px)}
+.contact h2{margin:0 0 32px;font-weight:400;letter-spacing:-.045em;line-height:.95;font-size:clamp(38px,6vw,88px);max-width:16ch;text-wrap:balance}
 .links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;border-top:1px solid rgba(255,255,255,.18);padding-top:24px}
 .links small{display:block;color:#9aa1ad;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
 .links div{font-size:clamp(16px,1.6vw,20px)}
