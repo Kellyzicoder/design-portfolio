@@ -37,6 +37,14 @@ export default {
       description: 'Shown when someone opens the poster. Leave empty to use the file name.',
     },
     {
+      name: 'more',
+      title: 'More images from this project',
+      type: 'array',
+      of: [{ type: 'image' }],
+      options: { layout: 'grid' },
+      description: 'Optional. Add the other flyers, mockups or sizes from the same event or logo. The main image above shows in the grid; people can flip through these when they open it.',
+    },
+    {
       name: 'brief',
       title: 'Brief',
       type: 'text',
