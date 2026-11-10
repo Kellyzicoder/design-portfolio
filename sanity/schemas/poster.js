@@ -1,5 +1,6 @@
 import { SECTION_OPTIONS } from '../../lib/sections';
 import SectionInput from '../components/SectionInput';
+import MultiImageInput from '../components/MultiImageInput';
 import { nameFromFile } from '../../lib/fileName';
 
 export default {
@@ -42,6 +43,7 @@ export default {
       type: 'array',
       of: [{ type: 'image' }],
       options: { layout: 'grid' },
+      components: { input: MultiImageInput },
       description: 'Optional. Add the other flyers, mockups or sizes from the same event or logo. The main image above shows in the grid; people can flip through these when they open it.',
     },
     {
