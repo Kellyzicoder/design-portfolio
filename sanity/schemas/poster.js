@@ -40,9 +40,12 @@ export default {
       name: 'more',
       title: 'More images from this project',
       type: 'array',
-      of: [{ type: 'image' }],
+      of: [{
+        type: 'image',
+        fields: [{ name: 'label', title: 'Label (optional)', type: 'string', description: 'e.g. Colour palette, Moodboard, Bottle mockup' }],
+      }],
       options: { layout: 'grid' },
-      description: 'Optional. Add the other flyers, mockups or sizes from the same event or logo. The main image above shows in the grid; people can flip through these when they open it.',
+      description: 'Optional. Add the other flyers, mockups, moodboard or colour palette from the same event or logo. Click an image to give it a label. The main image above shows in the grid; people can flip through these when they open it.',
     },
     {
       name: 'brief',

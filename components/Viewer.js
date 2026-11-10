@@ -112,13 +112,13 @@ export default function Viewer({ list, index, label, onClose, onIndex }) {
         </div>
         <div className="meta">
           <button aria-label="Previous" onClick={() => go(-1)}>◀</button>
-          <span>{p.title || label} · {imgs.length > 1 ? `image ${k + 1} of ${imgs.length}` : `${index + 1} / ${list.length}`}</span>
+          <span>{p.title || label}{k > 0 && cur.label ? ` · ${cur.label}` : ''} · {imgs.length > 1 ? `${k + 1} of ${imgs.length}` : `${index + 1} / ${list.length}`}</span>
           <button aria-label="Next" onClick={() => go(1)}>▶</button>
         </div>
         {imgs.length > 1 && (
           <div className="v-thumbs" role="tablist" aria-label="Images in this project">
             {imgs.map((m, i) => (
-              <button key={i} role="tab" aria-selected={i === k} aria-label={`Image ${i + 1}`} onClick={() => setK(i)}>
+              <button key={i} role="tab" aria-selected={i === k} aria-label={(i > 0 && m.label) || `Image ${i + 1}`} title={(i > 0 && m.label) || p.title || ''} onClick={() => setK(i)}>
                 <img src={sized(m.url, 160)} alt="" loading="lazy" />
               </button>
             ))}
