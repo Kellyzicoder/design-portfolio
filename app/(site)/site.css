@@ -586,3 +586,9 @@ footer a{color:inherit}
 .dp-cta-box{display:grid;gap:10px;align-content:start;justify-items:start}
 .dp-cta-box p{margin:0;color:var(--soft)}
 @media (max-width:900px){.dg.dg-many{grid-template-columns:1fr}.dg-main{position:static}.dg-thumbs{grid-template-columns:repeat(4,minmax(0,1fr))}.dg-thumbs span{display:none}}
+
+/* steady masonry: fixed columns filled shortest-first, so designs never jump between columns */
+.masonry.mgrid{columns:auto;display:flex;align-items:flex-start;gap:var(--mgap,16px)}
+.mgrid .mcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:var(--mgap,16px)}
+.mgrid .mcol>button{display:block;margin:0}
+.mgrid>.empty{flex:1}

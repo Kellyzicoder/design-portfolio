@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { SECTIONS as DEFAULT_SECTIONS } from '@/lib/sections';
 import { useRouter } from 'next/navigation';
 import { hasCaption } from './Viewer';
+import Masonry from './Masonry';
 import { openDesign } from '@/lib/openDesign';
 import { spread, mixSections } from '@/lib/spread';
 
@@ -83,16 +84,16 @@ export default function DesignsGallery({ posters, sections }) {
           ))}
         </div>
       )}
-      <div className={`masonry${isFeatured ? ' big' : ''}`} key={active.id}>
-        {list.length === 0 && <div className="empty">No {active.title} designs added yet</div>}
-        {shownList.map((p, i) => (
+      <Masonry key={active.id} className={`masonry${isFeatured ? ' big' : ''}`} items={shownList} minCol={isFeatured ? 150 : 120} maxCols={isFeatured ? 6 : 8}
+        empty={<div className="empty">No {active.title} designs added yet</div>}
+        render={(p, i) => (
           <button key={p.id} onClick={() => openDesign(router, p)} style={{ ...blur(p), aspectRatio: String(p.aspect || 0.75), '--i': i }}>
             <img src={sized(p.url, isFeatured ? 600 : 400)} alt={p.title || `${active.title} design ${i + 1}`} loading="lazy" decoding="async" onLoad={onImgLoad} ref={(el) => { if (el && el.complete && el.naturalWidth) el.classList.add('loaded'); }} />
             {p.more && p.more.length > 0 && <span className="count" aria-label={`${p.more.length + 1} images`}>+{p.more.length}</span>}
             <span className="cap"><b>{p.title}</b><small>{sectionName[p.section] || ''}</small><i className="cap-cta">{hasCaption(p) ? 'Read the story' : 'View design'} →</i></span>
           </button>
-        ))}
-      </div>
+        )}
+      />
       {!isFeatured && list.length > LIMIT && (
         <div className="show-more">
           <a href={`/work/${active.id}`}>Show all {list.length} {active.title} <span aria-hidden="true">→</span></a>
