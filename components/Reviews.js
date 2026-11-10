@@ -18,6 +18,11 @@ function Stars({ n }) {
 export default function Reviews({ testimonials = [], google = null }) {
   const list = [...((google && google.reviews) || []), ...testimonials];
   if (!list.length) return null;
+  // repeat the reviews so the strip is long enough, then twice over for a seamless loop
+  const base = [];
+  while (base.length < Math.max(6, list.length)) base.push(...list);
+  const half = base.length;
+  const loop = [...base, ...base];
   return (
     <section className="block pad" id="kind-words" style={{ paddingTop: 0 }}>
       <div className="wrap">
@@ -34,9 +39,11 @@ export default function Reviews({ testimonials = [], google = null }) {
             <p className="eyebrow" style={{ margin: 0 }}>From people I’ve designed for</p>
           )}
         </div>
-        <div className={`quotes${list.length === 1 ? ' single' : ''}`}>
-          {list.map((t) => (
-            <figure key={t.id} className="quote">
+        {/* the reviews slide left to right in a loop and pause under the cursor (still for "reduce motion") */}
+        <div className={styles.marquee} aria-label="Reviews">
+          <div className={styles.track} style={{ '--dur': `${Math.max(30, loop.length * 9)}s` }}>
+          {loop.map((t, n) => (
+            <figure key={`${t.id}-${n}`} className={`quote ${styles.card}`} aria-hidden={n >= half ? 'true' : undefined}>
               <div className={styles.top}>
                 {t.rating ? <Stars n={t.rating} /> : <span className="mark" aria-hidden="true">“</span>}
                 {BADGE[t.source] && <span className={`${styles.badge} ${styles[t.source]}`}>{BADGE[t.source]}</span>}
@@ -55,6 +62,7 @@ export default function Reviews({ testimonials = [], google = null }) {
               </figcaption>
             </figure>
           ))}
+          </div>
         </div>
       </div>
     </section>
